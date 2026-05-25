@@ -237,82 +237,8 @@ body{font-family:'Nunito',sans-serif;background:#B8D4A8;overflow:hidden;height:1
 <!-- BG -->
 <rect width="1400" height="1000" fill="url(#skyG)"/>
 
-<!-- ═══════════════════════════════════════════════
-     ROAD NETWORK — matches sketch layout
-     Main H road: y=470 (centre horizontal = viale2)
-     Main V road: x=680 (centre vertical = viale)
-     Top H secondary: y=260
-     Bottom H secondary: y=680 (inside Solaris)
-     Left V secondary: x=290
-     Right V secondary: x=1070
-     ═══════════════════════════════════════════════ -->
-
 <!-- Ground fill -->
 <rect x="0" y="0" width="1400" height="1000" fill="#B8D4A8" opacity=".18"/>
-
-<!-- ── VIALE (main vertical road, centre) ── -->
-<rect x="664" y="60" width="32" height="880" fill="#686868"/>
-<!-- viale centre dashes -->
-<rect x="679" y="70"  width="4" height="28" fill="#FFD700" opacity=".7" rx="1"/>
-<rect x="679" y="130" width="4" height="28" fill="#FFD700" opacity=".7" rx="1"/>
-<rect x="679" y="190" width="4" height="28" fill="#FFD700" opacity=".7" rx="1"/>
-<rect x="679" y="320" width="4" height="28" fill="#FFD700" opacity=".7" rx="1"/>
-<rect x="679" y="380" width="4" height="28" fill="#FFD700" opacity=".7" rx="1"/>
-<rect x="679" y="510" width="4" height="28" fill="#FFD700" opacity=".7" rx="1"/>
-<rect x="679" y="570" width="4" height="28" fill="#FFD700" opacity=".7" rx="1"/>
-<rect x="679" y="630" width="4" height="28" fill="#FFD700" opacity=".7" rx="1"/>
-<rect x="679" y="700" width="4" height="28" fill="#FFD700" opacity=".7" rx="1"/>
-<rect x="679" y="760" width="4" height="28" fill="#FFD700" opacity=".7" rx="1"/>
-<rect x="679" y="820" width="4" height="28" fill="#FFD700" opacity=".7" rx="1"/>
-<!-- sidewalks viale -->
-<rect x="660" y="60" width="4" height="880" fill="#D0D0C8"/>
-<rect x="696" y="60" width="4" height="880" fill="#D0D0C8"/>
-
-<!-- ── VIALE 2 (main horizontal road, centre) ── -->
-<rect x="60" y="454" width="1280" height="32" fill="#686868"/>
-<!-- viale2 centre dashes -->
-<rect x="75"   y="469" width="28" height="4" fill="#FFD700" opacity=".7" rx="1"/>
-<rect x="140"  y="469" width="28" height="4" fill="#FFD700" opacity=".7" rx="1"/>
-<rect x="205"  y="469" width="28" height="4" fill="#FFD700" opacity=".7" rx="1"/>
-<rect x="330"  y="469" width="28" height="4" fill="#FFD700" opacity=".7" rx="1"/>
-<rect x="395"  y="469" width="28" height="4" fill="#FFD700" opacity=".7" rx="1"/>
-<rect x="460"  y="469" width="28" height="4" fill="#FFD700" opacity=".7" rx="1"/>
-<rect x="720"  y="469" width="28" height="4" fill="#FFD700" opacity=".7" rx="1"/>
-<rect x="790"  y="469" width="28" height="4" fill="#FFD700" opacity=".7" rx="1"/>
-<rect x="860"  y="469" width="28" height="4" fill="#FFD700" opacity=".7" rx="1"/>
-<rect x="930"  y="469" width="28" height="4" fill="#FFD700" opacity=".7" rx="1"/>
-<rect x="1000" y="469" width="28" height="4" fill="#FFD700" opacity=".7" rx="1"/>
-<rect x="1100" y="469" width="28" height="4" fill="#FFD700" opacity=".7" rx="1"/>
-<rect x="1180" y="469" width="28" height="4" fill="#FFD700" opacity=".7" rx="1"/>
-<!-- sidewalks viale2 -->
-<rect x="60" y="450" width="1280" height="4" fill="#D0D0C8"/>
-<rect x="60" y="486" width="1280" height="4" fill="#D0D0C8"/>
-
-<!-- ── LEFT VERTICAL secondary (between Mudtown cols) x=290 ── -->
-<image href="assets/strada2.png" x="276" y="60" width="20" height="390" preserveAspectRatio="xMidYMid slice" opacity=".75"/>
-<image href="assets/strada2.png" x="276" y="490" width="20" height="460" preserveAspectRatio="xMidYMid slice" opacity=".75"/>
-
-<!-- ── RIGHT VERTICAL secondary x=1070 ── -->
-<image href="assets/strada2.png" x="1056" y="60" width="20" height="390" preserveAspectRatio="xMidYMid slice" opacity=".75"/>
-<image href="assets/strada2.png" x="1056" y="490" width="20" height="460" preserveAspectRatio="xMidYMid slice" opacity=".75"/>
-
-<!-- ── TOP HORIZONTAL secondary y=260 ── -->
-<image href="assets/strada.png" x="60" y="246" width="600" height="20" preserveAspectRatio="xMidYMid slice" opacity=".75"/>
-<image href="assets/strada.png" x="700" y="246" width="640" height="20" preserveAspectRatio="xMidYMid slice" opacity=".75"/>
-
-<!-- ── BOTTOM HORIZONTAL secondary y=700 ── -->
-<image href="assets/strada.png" x="60" y="686" width="600" height="20" preserveAspectRatio="xMidYMid slice" opacity=".75"/>
-<image href="assets/strada.png" x="700" y="686" width="640" height="20" preserveAspectRatio="xMidYMid slice" opacity=".75"/>
-
-<!-- ── Intersection fill squares (no road gap) ── -->
-<rect x="276" y="246" width="20" height="20" fill="#777" opacity=".75"/>
-<rect x="1056" y="246" width="20" height="20" fill="#777" opacity=".75"/>
-<rect x="276" y="686" width="20" height="20" fill="#777" opacity=".75"/>
-<rect x="1056" y="686" width="20" height="20" fill="#777" opacity=".75"/>
-<rect x="664" y="246" width="32" height="20" fill="#686868"/>
-<rect x="664" y="686" width="32" height="20" fill="#686868"/>
-<rect x="276" y="454" width="20" height="32" fill="#686868"/>
-<rect x="1056" y="454" width="20" height="32" fill="#686868"/>
 
 <!-- ══════════════════════════════════════════════════════
      FONTANA — centre intersection
