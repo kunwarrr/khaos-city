@@ -44,12 +44,10 @@ body{font-family:'Nunito',sans-serif;background:#B8D4A8;overflow:hidden;height:1
 #city-canvas{position:absolute;transform-origin:0 0}
 
 /* ─── SVG INTERACTIONS ─── */
-.district-zone{cursor:pointer;transition:filter .18s}
-.district-zone:hover{filter:brightness(1.12) drop-shadow(0 0 8px rgba(255,255,200,.4))}
-.task-badge{animation:bob 1.4s ease-in-out infinite;cursor:pointer}
+.district-zone{transition:none}
+.task-badge{animation:bob 1.4s ease-in-out infinite}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-.map-asset{transition:filter .2s}
-.map-asset:hover{filter:brightness(1.15) drop-shadow(0 2px 4px rgba(0,0,0,.4))}
+.map-asset{}
 
 /* ─── BOTTOM BAR ─── */
 #stats-bar{position:fixed;bottom:0;left:0;right:0;height:96px;background:rgba(10,18,10,.95);border-top:2px solid rgba(255,255,255,.08);display:flex;align-items:center;padding:0 18px;gap:18px;z-index:200;overflow-x:auto}
@@ -156,6 +154,16 @@ body{font-family:'Nunito',sans-serif;background:#B8D4A8;overflow:hidden;height:1
 /* ─── OVERLAY LABELS on map ─── */
 .map-overlay{pointer-events:none;position:absolute;font-family:'Fredoka One',cursive}
 
+/* ─── PROXIMITY HINT ─── */
+#proximity-hint{position:fixed;bottom:106px;left:50%;transform:translateX(-50%);background:rgba(10,20,10,.88);color:#7defa0;border:2px solid #1DB97A;border-radius:40px;padding:8px 24px;font-family:'Fredoka One',cursive;font-size:15px;z-index:250;pointer-events:none;opacity:0;transition:opacity .3s;white-space:nowrap}
+#proximity-hint.visible{opacity:1}
+
+/* ─── TASK PANEL (T-key) ─── */
+#task-panel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:350;background:var(--panel);border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.45);width:370px;max-width:94vw;display:none;animation:slideUp .28s cubic-bezier(.34,1.56,.64,1)}
+#task-panel .panel-hdr{padding:18px 18px 10px;display:flex;align-items:center;gap:10px}
+#task-panel .panel-title{font-family:'Fredoka One',cursive;font-size:21px;flex:1}
+#task-panel .panel-body{padding:0 18px 18px;max-height:62vh;overflow-y:auto;scrollbar-width:thin}
+#task-overlay-bg{position:fixed;inset:0;z-index:340;background:rgba(0,0,0,.5);display:none}
 </style>
 </head>
 <body>
@@ -215,7 +223,7 @@ body{font-family:'Nunito',sans-serif;background:#B8D4A8;overflow:hidden;height:1
   onmouseleave="endDrag()"
   onwheel="doZoom(event)">
 <div id="city-canvas">
-<svg id="city-svg" width="1100" height="820" viewBox="0 0 1100 820" xmlns="http://www.w3.org/2000/svg">
+<svg id="city-svg" width="1400" height="1000" viewBox="0 0 1400 1000" xmlns="http://www.w3.org/2000/svg">
 <defs>
   <linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1">
     <stop offset="0%" stop-color="#C2DFF5"/>
@@ -227,305 +235,332 @@ body{font-family:'Nunito',sans-serif;background:#B8D4A8;overflow:hidden;height:1
 </defs>
 
 <!-- BG -->
-<rect width="1100" height="820" fill="url(#skyG)"/>
-<!-- Grass base -->
-<ellipse cx="550" cy="680" rx="520" ry="180" fill="#90C060" opacity=".35"/>
+<rect width="1400" height="1000" fill="url(#skyG)"/>
 
-<!-- ─── ROADS ─── -->
-<!-- Main H road -->
-<rect x="70" y="388" width="960" height="34" fill="#686868" rx="2"/>
-<!-- center dashes -->
-<rect x="75" y="403" width="30" height="4" fill="#FFD700" opacity=".7" rx="2"/>
-<rect x="145" y="403" width="30" height="4" fill="#FFD700" opacity=".7" rx="2"/>
-<rect x="215" y="403" width="30" height="4" fill="#FFD700" opacity=".7" rx="2"/>
-<rect x="285" y="403" width="30" height="4" fill="#FFD700" opacity=".7" rx="2"/>
-<rect x="355" y="403" width="30" height="4" fill="#FFD700" opacity=".7" rx="2"/>
-<rect x="505" y="403" width="30" height="4" fill="#FFD700" opacity=".7" rx="2"/>
-<rect x="575" y="403" width="30" height="4" fill="#FFD700" opacity=".7" rx="2"/>
-<rect x="645" y="403" width="30" height="4" fill="#FFD700" opacity=".7" rx="2"/>
-<rect x="715" y="403" width="30" height="4" fill="#FFD700" opacity=".7" rx="2"/>
-<rect x="785" y="403" width="30" height="4" fill="#FFD700" opacity=".7" rx="2"/>
-<rect x="855" y="403" width="30" height="4" fill="#FFD700" opacity=".7" rx="2"/>
-<rect x="925" y="403" width="30" height="4" fill="#FFD700" opacity=".7" rx="2"/>
-<!-- Sidewalks -->
-<rect x="70" y="384" width="960" height="4" fill="#D0D0C8" rx="1"/>
-<rect x="70" y="422" width="960" height="4" fill="#D0D0C8" rx="1"/>
-<!-- Main V road -->
-<rect x="536" y="90" width="28" height="640" fill="#686868" rx="2"/>
-<rect x="548" y="95" width="4" height="30" fill="#FFD700" opacity=".6" rx="1"/>
-<rect x="548" y="155" width="4" height="30" fill="#FFD700" opacity=".6" rx="1"/>
-<rect x="548" y="215" width="4" height="30" fill="#FFD700" opacity=".6" rx="1"/>
-<rect x="548" y="275" width="4" height="30" fill="#FFD700" opacity=".6" rx="1"/>
-<rect x="548" y="455" width="4" height="30" fill="#FFD700" opacity=".6" rx="1"/>
-<rect x="548" y="515" width="4" height="30" fill="#FFD700" opacity=".6" rx="1"/>
-<rect x="548" y="575" width="4" height="30" fill="#FFD700" opacity=".6" rx="1"/>
-<rect x="548" y="635" width="4" height="30" fill="#FFD700" opacity=".6" rx="1"/>
-<!-- Cross roads H -->
-<rect x="70" y="222" width="450" height="20" fill="#777" rx="1" opacity=".7"/>
-<rect x="580" y="222" width="450" height="20" fill="#777" rx="1" opacity=".7"/>
-<rect x="70" y="560" width="450" height="20" fill="#777" rx="1" opacity=".7"/>
-<rect x="580" y="560" width="450" height="20" fill="#777" rx="1" opacity=".7"/>
-<!-- Cross roads V -->
-<rect x="248" y="90" width="20" height="320" fill="#777" rx="1" opacity=".7"/>
-<rect x="832" y="90" width="20" height="320" fill="#777" rx="1" opacity=".7"/>
-<rect x="248" y="422" width="20" height="320" fill="#777" rx="1" opacity=".7"/>
-<rect x="832" y="422" width="20" height="320" fill="#777" rx="1" opacity=".7"/>
+<!-- ═══════════════════════════════════════════════
+     ROAD NETWORK — matches sketch layout
+     Main H road: y=470 (centre horizontal = viale2)
+     Main V road: x=680 (centre vertical = viale)
+     Top H secondary: y=260
+     Bottom H secondary: y=680 (inside Solaris)
+     Left V secondary: x=290
+     Right V secondary: x=1070
+     ═══════════════════════════════════════════════ -->
 
-<!-- ─── PIAZZA CENTRALE ─── -->
-<g id="g-piazza">
-  <!-- Using asset: centro_fontana.png -->
-  <rect x="490" y="350" width="120" height="60" fill="#CEC088" rx="8" stroke="#AFA060" stroke-width="1.5"/>
-  <image id="img-fontana" href="assets/centro_fontana.png" x="507" y="342" width="86" height="76" preserveAspectRatio="xMidYMid meet" class="map-asset"/>
-  <!-- Billboard -->
-  <image id="img-billboard" href="assets/centro_billboard.png" x="458" y="358" width="36" height="44" preserveAspectRatio="xMidYMid meet" class="map-asset"/>
-  <text x="550" y="425" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="10" fill="#665" opacity=".8">PIAZZA CENTRALE</text>
-  <!-- Plaza trees -->
-  <circle cx="494" cy="360" r="10" fill="#2A8A2A"/><rect x="491" y="360" width="5" height="12" fill="#7A5A30"/>
-  <circle cx="606" cy="360" r="10" fill="#2A8A2A"/><rect x="603" y="360" width="5" height="12" fill="#7A5A30"/>
-  <circle cx="494" cy="418" r="10" fill="#2A8A2A"/><rect x="491" y="418" width="5" height="12" fill="#7A5A30"/>
-  <circle cx="606" cy="418" r="10" fill="#2A8A2A"/><rect x="603" y="418" width="5" height="12" fill="#7A5A30"/>
+<!-- Ground fill -->
+<rect x="0" y="0" width="1400" height="1000" fill="#B8D4A8" opacity=".18"/>
+
+<!-- ── VIALE (main vertical road, centre) ── -->
+<rect x="664" y="60" width="32" height="880" fill="#686868"/>
+<!-- viale centre dashes -->
+<rect x="679" y="70"  width="4" height="28" fill="#FFD700" opacity=".7" rx="1"/>
+<rect x="679" y="130" width="4" height="28" fill="#FFD700" opacity=".7" rx="1"/>
+<rect x="679" y="190" width="4" height="28" fill="#FFD700" opacity=".7" rx="1"/>
+<rect x="679" y="320" width="4" height="28" fill="#FFD700" opacity=".7" rx="1"/>
+<rect x="679" y="380" width="4" height="28" fill="#FFD700" opacity=".7" rx="1"/>
+<rect x="679" y="510" width="4" height="28" fill="#FFD700" opacity=".7" rx="1"/>
+<rect x="679" y="570" width="4" height="28" fill="#FFD700" opacity=".7" rx="1"/>
+<rect x="679" y="630" width="4" height="28" fill="#FFD700" opacity=".7" rx="1"/>
+<rect x="679" y="700" width="4" height="28" fill="#FFD700" opacity=".7" rx="1"/>
+<rect x="679" y="760" width="4" height="28" fill="#FFD700" opacity=".7" rx="1"/>
+<rect x="679" y="820" width="4" height="28" fill="#FFD700" opacity=".7" rx="1"/>
+<!-- sidewalks viale -->
+<rect x="660" y="60" width="4" height="880" fill="#D0D0C8"/>
+<rect x="696" y="60" width="4" height="880" fill="#D0D0C8"/>
+
+<!-- ── VIALE 2 (main horizontal road, centre) ── -->
+<rect x="60" y="454" width="1280" height="32" fill="#686868"/>
+<!-- viale2 centre dashes -->
+<rect x="75"   y="469" width="28" height="4" fill="#FFD700" opacity=".7" rx="1"/>
+<rect x="140"  y="469" width="28" height="4" fill="#FFD700" opacity=".7" rx="1"/>
+<rect x="205"  y="469" width="28" height="4" fill="#FFD700" opacity=".7" rx="1"/>
+<rect x="330"  y="469" width="28" height="4" fill="#FFD700" opacity=".7" rx="1"/>
+<rect x="395"  y="469" width="28" height="4" fill="#FFD700" opacity=".7" rx="1"/>
+<rect x="460"  y="469" width="28" height="4" fill="#FFD700" opacity=".7" rx="1"/>
+<rect x="720"  y="469" width="28" height="4" fill="#FFD700" opacity=".7" rx="1"/>
+<rect x="790"  y="469" width="28" height="4" fill="#FFD700" opacity=".7" rx="1"/>
+<rect x="860"  y="469" width="28" height="4" fill="#FFD700" opacity=".7" rx="1"/>
+<rect x="930"  y="469" width="28" height="4" fill="#FFD700" opacity=".7" rx="1"/>
+<rect x="1000" y="469" width="28" height="4" fill="#FFD700" opacity=".7" rx="1"/>
+<rect x="1100" y="469" width="28" height="4" fill="#FFD700" opacity=".7" rx="1"/>
+<rect x="1180" y="469" width="28" height="4" fill="#FFD700" opacity=".7" rx="1"/>
+<!-- sidewalks viale2 -->
+<rect x="60" y="450" width="1280" height="4" fill="#D0D0C8"/>
+<rect x="60" y="486" width="1280" height="4" fill="#D0D0C8"/>
+
+<!-- ── LEFT VERTICAL secondary (between Mudtown cols) x=290 ── -->
+<image href="assets/strada2.png" x="276" y="60" width="20" height="390" preserveAspectRatio="xMidYMid slice" opacity=".75"/>
+<image href="assets/strada2.png" x="276" y="490" width="20" height="460" preserveAspectRatio="xMidYMid slice" opacity=".75"/>
+
+<!-- ── RIGHT VERTICAL secondary x=1070 ── -->
+<image href="assets/strada2.png" x="1056" y="60" width="20" height="390" preserveAspectRatio="xMidYMid slice" opacity=".75"/>
+<image href="assets/strada2.png" x="1056" y="490" width="20" height="460" preserveAspectRatio="xMidYMid slice" opacity=".75"/>
+
+<!-- ── TOP HORIZONTAL secondary y=260 ── -->
+<image href="assets/strada.png" x="60" y="246" width="600" height="20" preserveAspectRatio="xMidYMid slice" opacity=".75"/>
+<image href="assets/strada.png" x="700" y="246" width="640" height="20" preserveAspectRatio="xMidYMid slice" opacity=".75"/>
+
+<!-- ── BOTTOM HORIZONTAL secondary y=700 ── -->
+<image href="assets/strada.png" x="60" y="686" width="600" height="20" preserveAspectRatio="xMidYMid slice" opacity=".75"/>
+<image href="assets/strada.png" x="700" y="686" width="640" height="20" preserveAspectRatio="xMidYMid slice" opacity=".75"/>
+
+<!-- ── Intersection fill squares (no road gap) ── -->
+<rect x="276" y="246" width="20" height="20" fill="#777" opacity=".75"/>
+<rect x="1056" y="246" width="20" height="20" fill="#777" opacity=".75"/>
+<rect x="276" y="686" width="20" height="20" fill="#777" opacity=".75"/>
+<rect x="1056" y="686" width="20" height="20" fill="#777" opacity=".75"/>
+<rect x="664" y="246" width="32" height="20" fill="#686868"/>
+<rect x="664" y="686" width="32" height="20" fill="#686868"/>
+<rect x="276" y="454" width="20" height="32" fill="#686868"/>
+<rect x="1056" y="454" width="20" height="32" fill="#686868"/>
+
+<!-- ══════════════════════════════════════════════════════
+     FONTANA — centre intersection
+     ══════════════════════════════════════════════════════ -->
+<g id="g-fontana">
+  <image href="assets/fontana.png" x="530" y="418" width="300" height="96" preserveAspectRatio="xMidYMid meet"/>
 </g>
 
-<!-- ═══ MUDTOWN — top-left ═══ -->
-<g id="g-mudtown" class="district-zone" onclick="selectDistrict('mudtown')">
-  <rect x="74" y="96" width="448" height="280" fill="#C0A070" rx="14" opacity=".28"/>
-  <!-- Road asset -->
-  <image href="assets/mud_road.png" x="80" y="230" width="180" height="60" preserveAspectRatio="xMidYMid meet" class="map-asset" opacity=".9"/>
-  <!-- Houses -->
-  <image href="assets/mud_casa.png" x="90" y="110" width="90" height="90" preserveAspectRatio="xMidYMid meet" class="map-asset"/>
-  <image href="assets/mud_casa.png" x="195" y="120" width="85" height="82" preserveAspectRatio="xMidYMid meet" class="map-asset" transform="scale(-1,1) translate(-475,0)"/>
-  <image href="assets/mud_casa.png" x="310" y="108" width="80" height="78" preserveAspectRatio="xMidYMid meet" class="map-asset"/>
-  <!-- Fallback SVG buildings (show if images fail gracefully) -->
-  <!-- Extra derelict blocks -->
-  <rect x="420" y="130" width="80" height="100" fill="#9A7850" rx="4" opacity=".6"/>
-  <rect x="422" y="128" width="76" height="14" fill="#7A5830" rx="3" opacity=".6"/>
-  <rect x="432" y="150" width="16" height="20" fill="#5A3820" rx="1" opacity=".5"/>
-  <rect x="456" y="150" width="16" height="20" fill="#5A3820" rx="1" opacity=".5"/>
-  <!-- Bus stop asset -->
-  <image id="img-mud-busstop" href="assets/mud_busstop.png" x="148" y="294" width="70" height="60" preserveAspectRatio="xMidYMid meet" class="map-asset" opacity=".5"/>
-  <text x="183" y="360" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="9" fill="#8A5A2A" opacity=".7">fermata rotta</text>
-  <!-- Cycle path asset (shown after task completion) -->
-  <image id="img-mud-cycle" href="assets/mud cyclepath.png" x="74" y="302" width="160" height="50" preserveAspectRatio="xMidYMid meet" class="map-asset" opacity="0" id="mud-cycle-img"/>
-  <!-- Scooter after task -->
-  <image id="img-mud-scooter" href="assets/mud_newcicle.png" x="400" y="305" width="64" height="54" preserveAspectRatio="xMidYMid meet" class="map-asset" opacity="0"/>
+<!-- ══════════════════════════════════════════════════════
+     MUDTOWN — top-left quadrant
+     Sketch: 2 rows × 3 cols of buildings separated by strada.png
+     Col boundaries: ~75–276 | 296–664
+     Row 1 buildings: y≈70–246 split into 3 cols with sub-road at x~190
+     Row 2 buildings: y≈266–450
+     ══════════════════════════════════════════════════════ -->
+<g id="g-mudtown">
+  <!-- Background tint -->
+  <rect x="66" y="66" width="590" height="376" fill="#C0A070" rx="10" opacity=".18"/>
+
+  <!-- ── Row 1, Col A (x≈75–175) ── -->
+  <image href="assets/mudtown.png"  x="76"  y="76"  width="96" height="88" preserveAspectRatio="xMidYMid meet"/>
+  <!-- ── Row 1, Col B (x≈196–275) ── -->
+  <image href="assets/mud2town.png" x="196" y="76"  width="76" height="88" preserveAspectRatio="xMidYMid meet"/>
+  <!-- ── Sub-vertical strada between col B and C ── -->
+  <image href="assets/viale.png"    x="296" y="66"  width="32" height="380" preserveAspectRatio="xMidYMid slice" opacity=".5"/>
+  <!-- ── Row 1, Col C (x≈330–500) ── -->
+  <image href="assets/mudtown.png"  x="335" y="76"  width="96" height="88" preserveAspectRatio="xMidYMid meet"/>
+  <!-- ── Row 1, Col D (x≈440–600) ── -->
+  <image href="assets/mud2town.png" x="446" y="76"  width="96" height="88" preserveAspectRatio="xMidYMid meet"/>
+  <image href="assets/mudtown.png"  x="555" y="76"  width="96" height="88" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- ── Strada H between row 1 and row 2 ── -->
+  <image href="assets/strada.png"   x="66"  y="172" width="192" height="38" preserveAspectRatio="xMidYMid slice"/>
+  <image href="assets/strada.png"   x="330" y="172" width="326" height="38" preserveAspectRatio="xMidYMid slice"/>
+
+  <!-- ── Row 2, Col A ── -->
+  <image href="assets/mud2town.png" x="76"  y="218" width="96" height="88" preserveAspectRatio="xMidYMid meet"/>
+  <!-- ── Row 2, Col B ── -->
+  <image href="assets/mudtown.png"  x="196" y="218" width="76" height="88" preserveAspectRatio="xMidYMid meet"/>
+  <!-- ── Row 2, Col C ── -->
+  <image href="assets/mud2town.png" x="335" y="218" width="96" height="88" preserveAspectRatio="xMidYMid meet"/>
+  <!-- ── Row 2, Col D ── -->
+  <image href="assets/mudtown.png"  x="446" y="218" width="96" height="88" preserveAspectRatio="xMidYMid meet"/>
+  <image href="assets/mud2town.png" x="555" y="218" width="96" height="88" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- ── Seconda strada H ── -->
+  <image href="assets/strada.png"   x="66"  y="314" width="192" height="38" preserveAspectRatio="xMidYMid slice"/>
+  <image href="assets/strada.png"   x="330" y="314" width="326" height="38" preserveAspectRatio="xMidYMid slice"/>
+
   <!-- District label -->
-  <text x="292" y="116" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="20" fill="#5C3A18" stroke="#E0C890" stroke-width="5" paint-order="stroke">🏚️ MUDTOWN</text>
+  <text x="355" y="84" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="18" fill="#5C3A18" stroke="#E0C890" stroke-width="4" paint-order="stroke">🏚️ MUDTOWN</text>
   <!-- Alert badge -->
   <g class="task-badge" id="badge-mudtown">
-    <circle cx="460" cy="128" r="17" fill="#E84040" stroke="#fff" stroke-width="2.5" filter="url(#shadow)"/>
-    <text x="460" y="134" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="15" fill="#fff">!</text>
+    <circle cx="636" cy="90" r="17" fill="#E84040" stroke="#fff" stroke-width="2.5" filter="url(#shadow)"/>
+    <text x="636" y="96" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="15" fill="#fff">!</text>
   </g>
 </g>
 
-<!-- ═══ IRON DISTRICT — top-right ═══ -->
-<g id="g-iron" class="district-zone" onclick="selectDistrict('iron')">
-  <rect x="580" y="96" width="450" height="280" fill="#506070" rx="14" opacity=".22"/>
-  <!-- Factory main -->
-  <rect x="640" y="120" width="130" height="120" fill="#5A6878" rx="5"/>
-  <rect x="642" y="118" width="126" height="18" fill="#3A4858" rx="4"/>
-  <!-- chimney -->
-  <rect x="768" y="130" width="20" height="80" fill="#4A4A4A" rx="3"/>
-  <rect x="790" y="132" width="16" height="65" fill="#5A5A5A" rx="2"/>
-  <!-- smoke (anim) -->
-  <circle id="smoke1" cx="778" cy="126" r="9" fill="#AAA" opacity=".5"><animate attributeName="cy" values="126;110;96" dur="2.2s" repeatCount="indefinite"/><animate attributeName="opacity" values=".5;.25;0" dur="2.2s" repeatCount="indefinite"/><animate attributeName="r" values="9;13;17" dur="2.2s" repeatCount="indefinite"/></circle>
-  <circle cx="800" cy="128" r="7" fill="#BBB" opacity=".4"><animate attributeName="cy" values="128;112;98" dur="1.8s" begin=".4s" repeatCount="indefinite"/><animate attributeName="opacity" values=".4;.2;0" dur="1.8s" begin=".4s" repeatCount="indefinite"/><animate attributeName="r" values="7;11;15" dur="1.8s" begin=".4s" repeatCount="indefinite"/></circle>
-  <rect x="652" y="145" width="24" height="30" fill="#2A3848" rx="1"/>
-  <rect x="684" y="145" width="24" height="30" fill="#2A3848" rx="1"/>
-  <rect x="716" y="145" width="24" height="30" fill="#2A3848" rx="1"/>
-  <rect x="652" y="185" width="90" height="42" fill="#3A4858" rx="2"/>
-  <!-- Crane -->
-  <rect x="840" y="118" width="7" height="130" fill="#9A9A9A" rx="2"/>
-  <rect x="830" y="118" width="90" height="7" fill="#9A9A9A" rx="2"/>
-  <rect x="910" y="118" width="4" height="38" fill="#888" rx="1"/>
-  <!-- Warehouse -->
-  <rect x="870" y="185" width="120" height="90" fill="#6A7A8A" rx="4"/>
-  <rect x="872" y="183" width="116" height="14" fill="#4A5A6A" rx="3"/>
-  <rect x="888" y="204" width="28" height="44" fill="#2A3848" rx="1"/>
-  <rect x="930" y="204" width="28" height="44" fill="#2A3848" rx="1"/>
-  <!-- Small bldg -->
-  <rect x="590" y="200" width="55" height="75" fill="#5A6A7A" rx="3"/>
-  <polygon points="588,200 647,200 618,178" fill="#3A4A5A"/>
-  <rect x="603" y="220" width="15" height="24" fill="#2A3848" rx="1"/>
+<!-- ══════════════════════════════════════════════════════
+     IRON DISTRICT — top-right quadrant
+     Sketch: fabbrica×2 top-left, luna top-right corner,
+     roto.png centre-left area, palazzo1/2/3 cluster,
+     stadio centre, park×2 right side
+     ══════════════════════════════════════════════════════ -->
+<g id="g-iron">
+  <!-- Background tint -->
+  <rect x="700" y="66" width="640" height="376" fill="#506070" rx="10" opacity=".18"/>
+
+  <!-- ── Factories top-left of quadrant ── -->
+  <image href="assets/fabbrica.png" x="710"  y="76"  width="130" height="100" preserveAspectRatio="xMidYMid meet"/>
+  <image href="assets/fabbrica.png" x="855"  y="76"  width="130" height="100" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- ── Luna top-right corner ── -->
+  <image href="assets/luna.png"     x="1200" y="66"  width="130" height="90"  preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- ── Park top-right ── -->
+  <image href="assets/park.png"     x="1090" y="76"  width="100" height="80"  preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- ── Roto centre-left ── -->
+  <image href="assets/roto.png"     x="760"  y="186" width="140" height="130" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- ── Palazzi cluster ── -->
+  <image href="assets/palazzo1.png" x="710"  y="200" width="90"  height="80"  preserveAspectRatio="xMidYMid meet"/>
+  <image href="assets/palazzo3.png" x="710"  y="290" width="90"  height="70"  preserveAspectRatio="xMidYMid meet"/>
+  <image href="assets/stadio.png"   x="860"  y="210" width="160" height="140" preserveAspectRatio="xMidYMid meet"/>
+  <image href="assets/palazzo2.png" x="1040" y="200" width="90"  height="80"  preserveAspectRatio="xMidYMid meet"/>
+  <image href="assets/palazzo2.png" x="1145" y="200" width="90"  height="80"  preserveAspectRatio="xMidYMid meet"/>
+  <image href="assets/palazzo3.png" x="1040" y="290" width="90"  height="70"  preserveAspectRatio="xMidYMid meet"/>
+  <image href="assets/palazzo3.png" x="1145" y="290" width="90"  height="70"  preserveAspectRatio="xMidYMid meet"/>
+  <image href="assets/palazzo1.png" x="1250" y="200" width="90"  height="80"  preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- ── Park bottom-right ── -->
+  <image href="assets/park.png"     x="1250" y="290" width="90"  height="70"  preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- Smoke animation on factory -->
+  <circle cx="780" cy="76" r="9" fill="#AAA" opacity=".5">
+    <animate attributeName="cy" values="76;58;42" dur="2.2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values=".5;.25;0" dur="2.2s" repeatCount="indefinite"/>
+    <animate attributeName="r" values="9;13;17" dur="2.2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="925" cy="76" r="7" fill="#BBB" opacity=".4">
+    <animate attributeName="cy" values="76;58;42" dur="1.8s" begin=".4s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values=".4;.2;0" dur="1.8s" begin=".4s" repeatCount="indefinite"/>
+    <animate attributeName="r" values="7;11;15" dur="1.8s" begin=".4s" repeatCount="indefinite"/>
+  </circle>
+
   <!-- Electric truck (after task) -->
   <g id="iron-truck" opacity="0">
-    <rect x="620" y="295" width="70" height="32" fill="#3ABA6A" rx="4"/>
-    <rect x="622" y="297" width="22" height="18" fill="#B0F0D0" rx="2"/>
-    <rect x="622" y="322" width="10" height="8" fill="#222" rx="5"/>
-    <rect x="676" y="322" width="10" height="8" fill="#222" rx="5"/>
-    <text x="656" y="309" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="9" fill="#fff">⚡</text>
+    <image href="assets/truck_electric.png" x="720" y="350" width="90" height="50" preserveAspectRatio="xMidYMid meet"/>
   </g>
   <!-- Tram track after task -->
   <g id="iron-tram-track" opacity="0">
-    <rect x="580" y="280" width="450" height="5" fill="#888" rx="1"/>
-    <rect x="580" y="283" width="450" height="2" fill="#666" opacity=".5"/>
-    <rect x="620" y="275" width="50" height="22" fill="#F0C040" rx="3"/>
-    <rect x="622" y="277" width="10" height="12" fill="#C0E8FF" rx="1"/>
-    <rect x="636" y="277" width="10" height="12" fill="#C0E8FF" rx="1"/>
-    <rect x="622" y="294" width="7" height="6" fill="#333" rx="3"/>
-    <rect x="658" y="294" width="7" height="6" fill="#333" rx="3"/>
+    <rect x="700" y="360" width="640" height="5" fill="#888" rx="1"/>
+    <rect x="700" y="363" width="640" height="2" fill="#666" opacity=".5"/>
   </g>
-  <text x="830" y="116" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="20" fill="#2A3848" stroke="#C0D0E0" stroke-width="5" paint-order="stroke">🏭 IRON DISTRICT</text>
+
+  <!-- District label -->
+  <text x="1000" y="84" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="18" fill="#2A3848" stroke="#C0D0E0" stroke-width="4" paint-order="stroke">🏭 IRON DISTRICT</text>
   <g class="task-badge" id="badge-iron">
-    <circle cx="1010" cy="128" r="17" fill="#E84040" stroke="#fff" stroke-width="2.5" filter="url(#shadow)"/>
-    <text x="1010" y="134" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="15" fill="#fff">!</text>
+    <circle cx="1310" cy="90" r="17" fill="#E84040" stroke="#fff" stroke-width="2.5" filter="url(#shadow)"/>
+    <text x="1310" y="96" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="15" fill="#fff">!</text>
   </g>
 </g>
 
-<!-- ═══ SOLARIS — bottom-left ═══ -->
-<g id="g-solaris" class="district-zone" onclick="selectDistrict('solaris')">
-  <rect x="74" y="430" width="448" height="320" fill="#E8C050" rx="14" opacity=".16"/>
-  <!-- Tower 1 -->
-  <rect x="90" y="455" width="68" height="180" fill="#E0ECF8" rx="4" stroke="#C0D8F0" stroke-width="1"/>
-  <rect x="92" y="453" width="64" height="16" fill="#60A0F0" rx="3"/>
-  <rect x="96" y="470" width="16" height="22" fill="#90C8FF" rx="1"/><rect x="118" y="470" width="16" height="22" fill="#90C8FF" rx="1"/>
-  <rect x="96" y="502" width="16" height="22" fill="#90C8FF" rx="1"/><rect x="118" y="502" width="16" height="22" fill="#90C8FF" rx="1"/>
-  <rect x="96" y="534" width="16" height="22" fill="#90C8FF" rx="1"/><rect x="118" y="534" width="16" height="22" fill="#90C8FF" rx="1"/>
-  <rect x="96" y="566" width="16" height="22" fill="#90C8FF" rx="1"/><rect x="118" y="566" width="16" height="22" fill="#90C8FF" rx="1"/>
-  <rect x="98" y="610" width="40" height="18" fill="#9090A0" rx="1"/>
-  <!-- Solar panels on roof -->
-  <rect x="96" y="455" width="26" height="10" fill="#2060D0" rx="2" opacity=".8"/>
-  <rect x="126" y="455" width="26" height="10" fill="#2060D0" rx="2" opacity=".8"/>
-  <!-- Tower 2 (taller) -->
-  <rect x="174" y="435" width="78" height="200" fill="#F4F8FC" rx="4" stroke="#D0E8F8" stroke-width="1"/>
-  <rect x="176" y="433" width="74" height="18" fill="#40B0FF" rx="3"/>
-  <rect x="182" y="456" width="20" height="30" fill="#A0D8FF" rx="1"/><rect x="210" y="456" width="20" height="30" fill="#A0D8FF" rx="1"/>
-  <rect x="182" y="496" width="20" height="30" fill="#A0D8FF" rx="1"/><rect x="210" y="496" width="20" height="30" fill="#A0D8FF" rx="1"/>
-  <rect x="182" y="536" width="20" height="30" fill="#A0D8FF" rx="1"/><rect x="210" y="536" width="20" height="30" fill="#A0D8FF" rx="1"/>
-  <rect x="184" y="605" width="52" height="22" fill="#8890A0" rx="2"/>
-  <!-- Tram stop -->
-  <rect x="290" y="530" width="110" height="54" fill="#B0DCA0" rx="7" stroke="#78B060" stroke-width="2"/>
-  <rect x="292" y="528" width="106" height="13" fill="#78B060" rx="5"/>
-  <text x="345" y="562" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="12" fill="#1A4A10">🚋 TRAM</text>
-  <!-- Tram line -->
-  <rect x="74" y="596" width="450" height="5" fill="#909090" rx="1" opacity=".6"/>
-  <!-- Bike sharing station (after task) -->
+<!-- ══════════════════════════════════════════════════════
+     SOLARIS — bottom-left quadrant
+     Sketch: gratta2×2 far left, strada2 vertical strip,
+     banca top, gratta1 tall vertical centre,
+     strada.png horizontal strips, strada2.png vertical,
+     roto4 bottom-centre, gratta2 bottom-left corner
+     ══════════════════════════════════════════════════════ -->
+<g id="g-solaris">
+  <!-- Background tint -->
+  <rect x="66" y="490" width="590" height="456" fill="#E8C050" rx="10" opacity=".13"/>
+
+  <!-- ── Far-left tall gratta2 pair ── -->
+  <image href="assets/gratta2.png"  x="66"  y="496" width="90"  height="160" preserveAspectRatio="xMidYMid meet"/>
+  <image href="assets/gratta2.png"  x="66"  y="668" width="90"  height="160" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- ── strada2 vertical strip ── -->
+  <image href="assets/strada2.png"  x="164" y="490" width="28"  height="456" preserveAspectRatio="xMidYMid slice" opacity=".6"/>
+
+  <!-- ── Banca top of centre block ── -->
+  <image href="assets/banca.png"    x="200" y="500" width="140" height="100" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- ── gratta1 tall centre ── -->
+  <image href="assets/gratta1.png"  x="350" y="490" width="100" height="200" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- ── strada horizontal rows ── -->
+  <image href="assets/strada.png"   x="200" y="608" width="286" height="34" preserveAspectRatio="xMidYMid slice"/>
+
+  <!-- ── seconda strada2 vertical ── -->
+  <image href="assets/strada2.png"  x="460" y="490" width="28"  height="456" preserveAspectRatio="xMidYMid slice" opacity=".6"/>
+
+  <!-- ── strada2 inside roto4 block ── -->
+  <image href="assets/strada2.png"  x="200" y="650" width="110" height="28"  preserveAspectRatio="xMidYMid slice" opacity=".6"/>
+
+  <!-- ── roto4 bottom-centre ── -->
+  <image href="assets/roto4.png"    x="200" y="690" width="240" height="200" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- ── strada bottom ── -->
+  <image href="assets/strada.png"   x="350" y="780" width="140" height="34" preserveAspectRatio="xMidYMid slice"/>
+
+  <!-- ── gratta2 bottom-left corner ── -->
+  <image href="assets/gratta2.png"  x="66"  y="900" width="90"  height="90"  preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- Bike sharing (after task) -->
   <g id="sol-bikes" opacity="0">
-    <rect x="380" y="510" width="80" height="36" fill="#B0E0FF" rx="5" stroke="#60B0FF" stroke-width="2"/>
-    <text x="420" y="533" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="11" fill="#003060">🚲 BIKE</text>
-    <image href="assets/mud_newcicle.png" x="385" y="555" width="50" height="42" preserveAspectRatio="xMidYMid meet"/>
+    <image href="assets/mud_newcicle.png" x="490" y="600" width="80" height="60" preserveAspectRatio="xMidYMid meet"/>
   </g>
   <!-- Green zone (after task) -->
   <g id="sol-green" opacity="0">
-    <circle cx="450" cy="480" r="18" fill="#2A8A2A"/><rect x="447" y="480" width="6" height="22" fill="#7A5030"/>
-    <circle cx="475" cy="472" r="14" fill="#3A9A3A"/><rect x="472" y="472" width="6" height="20" fill="#7A5030"/>
-    <circle cx="498" cy="480" r="16" fill="#2A8A2A"/><rect x="495" y="480" width="6" height="22" fill="#7A5030"/>
-    <rect x="390" y="455" width="130" height="4" fill="#E84040" rx="2" opacity=".7"/>
-    <text x="455" y="448" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="10" fill="#B00000">ZONA 30</text>
+    <circle cx="540" cy="550" r="20" fill="#2A8A2A"/>
+    <rect x="537" y="550" width="6" height="26" fill="#7A5030"/>
+    <circle cx="580" cy="540" r="16" fill="#3A9A3A"/>
+    <circle cx="616" cy="550" r="18" fill="#2A8A2A"/>
   </g>
-  <!-- Decorative trees -->
-  <circle cx="406" cy="490" r="14" fill="#2A8A2A"/><rect x="403" y="490" width="5" height="20" fill="#7A5030"/>
-  <circle cx="428" cy="484" r="11" fill="#3A9A3A"/>
-  <text x="290" y="450" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="20" fill="#7A5800" stroke="#FFFAE0" stroke-width="5" paint-order="stroke">✨ SOLARIS</text>
+
+  <!-- District label -->
+  <text x="355" y="510" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="18" fill="#7A5800" stroke="#FFFAE0" stroke-width="4" paint-order="stroke">✨ SOLARIS</text>
   <g class="task-badge" id="badge-solaris">
-    <circle cx="480" cy="458" r="17" fill="#E84040" stroke="#fff" stroke-width="2.5" filter="url(#shadow)"/>
-    <text x="480" y="464" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="15" fill="#fff">!</text>
+    <circle cx="636" cy="510" r="17" fill="#E84040" stroke="#fff" stroke-width="2.5" filter="url(#shadow)"/>
+    <text x="636" y="516" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="15" fill="#fff">!</text>
   </g>
 </g>
 
-<!-- ═══ NEON DISTRICT — bottom-right ═══ -->
-<g id="g-neon" class="district-zone" onclick="selectDistrict('neon')">
-  <rect x="580" y="430" width="450" height="320" fill="#C030A0" rx="14" opacity=".1"/>
-  <!-- Arcade -->
-  <rect x="616" y="458" width="82" height="105" fill="#1E1028" rx="4" stroke="#E040A0" stroke-width="2"/>
-  <rect x="618" y="456" width="78" height="14" fill="#E040A0" rx="3"/>
-  <rect x="626" y="477" width="14" height="18" fill="#FF50D0" rx="1" opacity=".9"/>
-  <rect x="648" y="477" width="14" height="18" fill="#FF50D0" rx="1" opacity=".9"/>
-  <rect x="670" y="477" width="14" height="18" fill="#FF50D0" rx="1" opacity=".9"/>
-  <rect x="626" y="502" width="14" height="18" fill="#FF50D0" rx="1" opacity=".7"/>
-  <rect x="648" y="502" width="14" height="18" fill="#FF50D0" rx="1" opacity=".7"/>
-  <rect x="670" y="502" width="14" height="18" fill="#FF50D0" rx="1" opacity=".7"/>
-  <text x="657" y="548" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="11" fill="#FF80E0">ARCADE</text>
-  <rect x="628" y="555" width="60" height="12" fill="#FF40C0" rx="2" opacity=".6"/>
-  <!-- Hotel -->
-  <rect x="730" y="442" width="100" height="146" fill="#12122A" rx="4" stroke="#40E8FF" stroke-width="2"/>
-  <rect x="732" y="440" width="96" height="16" fill="#40E8FF" rx="3"/>
-  <rect x="740" y="464" width="18" height="26" fill="#70F0FF" rx="1" opacity=".8"/>
-  <rect x="768" y="464" width="18" height="26" fill="#70F0FF" rx="1" opacity=".8"/>
-  <rect x="796" y="464" width="18" height="26" fill="#70F0FF" rx="1" opacity=".8"/>
-  <rect x="740" y="500" width="18" height="26" fill="#70F0FF" rx="1" opacity=".6"/>
-  <rect x="768" y="500" width="18" height="26" fill="#70F0FF" rx="1" opacity=".6"/>
-  <rect x="796" y="500" width="18" height="26" fill="#70F0FF" rx="1" opacity=".6"/>
-  <rect x="740" y="536" width="18" height="26" fill="#70F0FF" rx="1" opacity=".5"/>
-  <rect x="768" y="536" width="18" height="26" fill="#70F0FF" rx="1" opacity=".5"/>
-  <rect x="796" y="536" width="18" height="26" fill="#70F0FF" rx="1" opacity=".5"/>
-  <text x="780" y="574" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="11" fill="#40E8FF">HOTEL NEON</text>
-  <!-- Club 84 -->
-  <rect x="870" y="490" width="100" height="95" fill="#1E001E" rx="4" stroke="#FF40A0" stroke-width="2"/>
-  <rect x="872" y="488" width="96" height="14" fill="#FF40A0" rx="3"/>
-  <text x="920" y="544" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="14" fill="#FF80C0">CLUB 84</text>
-  <rect x="880" y="556" width="16" height="16" fill="#FF40A0" rx="1" opacity=".8"/>
-  <rect x="904" y="556" width="16" height="16" fill="#FF40A0" rx="1" opacity=".8"/>
-  <rect x="928" y="556" width="16" height="16" fill="#FF40A0" rx="1" opacity=".8"/>
-  <!-- Metro -->
-  <rect x="590" y="580" width="58" height="34" fill="#2A2A2A" rx="4" stroke="#FF40A0" stroke-width="1.5"/>
-  <text x="619" y="601" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="14" fill="#FF80C0">M</text>
+<!-- ══════════════════════════════════════════════════════
+     NEON DISTRICT — bottom-right quadrant  (empty for now)
+     ══════════════════════════════════════════════════════ -->
+<g id="g-neon">
+  <!-- Background tint -->
+  <rect x="700" y="490" width="640" height="456" fill="#C030A0" rx="10" opacity=".08"/>
+
   <!-- Night bus stop (after task) -->
   <g id="neon-busnight" opacity="0">
-    <rect x="592" y="442" width="90" height="36" fill="#1A3060" rx="6" stroke="#4080FF" stroke-width="2"/>
-    <text x="637" y="465" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="11" fill="#80B0FF">🌙 BUS NOTTE</text>
+    <rect x="720" y="540" width="110" height="40" fill="#1A3060" rx="6" stroke="#4080FF" stroke-width="2"/>
+    <text x="775" y="565" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="12" fill="#80B0FF">🌙 BUS NOTTE</text>
   </g>
   <!-- Hub (after task) -->
   <g id="neon-hub" opacity="0">
-    <rect x="960" y="560" width="86" height="66" fill="#1A2A1A" rx="6" stroke="#3ABA6A" stroke-width="2"/>
-    <text x="1003" y="582" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="10" fill="#60E890">HUB</text>
-    <text x="1003" y="596" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="9" fill="#60E890">MOBILITÀ</text>
-    <circle cx="987" cy="610" r="8" fill="none" stroke="#3ABA6A" stroke-width="2"/>
-    <circle cx="1005" cy="610" r="8" fill="none" stroke="#3ABA6A" stroke-width="2"/>
-    <circle cx="1023" cy="610" r="8" fill="#3ABA6A"/>
+    <rect x="1200" y="650" width="100" height="80" fill="#1A2A1A" rx="6" stroke="#3ABA6A" stroke-width="2"/>
+    <text x="1250" y="675" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="11" fill="#60E890">HUB</text>
+    <text x="1250" y="690" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="9" fill="#60E890">MOBILITÀ</text>
   </g>
-  <text x="830" y="450" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="20" fill="#700040" stroke="#FFD0F0" stroke-width="5" paint-order="stroke">🌃 NEON DISTRICT</text>
+
+  <!-- District label -->
+  <text x="1000" y="510" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="28" fill="#700040" stroke="#FFD0F0" stroke-width="5" paint-order="stroke">🌃 NEON DISTRICT</text>
   <g class="task-badge" id="badge-neon">
-    <circle cx="1010" cy="458" r="17" fill="#E84040" stroke="#fff" stroke-width="2.5" filter="url(#shadow)"/>
-    <text x="1010" y="464" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="15" fill="#fff">!</text>
+    <circle cx="1310" cy="510" r="17" fill="#E84040" stroke="#fff" stroke-width="2.5" filter="url(#shadow)"/>
+    <text x="1310" y="516" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="15" fill="#fff">!</text>
   </g>
 </g>
 
-<!-- ─── PLAYER (idle sprite animated) ─── -->
-<g id="player-sprite">
-  <image id="player-img" href="assets/idle_front.png" x="528" y="392" width="44" height="44" preserveAspectRatio="xMidYMid meet"/>
+<!-- ─── PLAYER (idle sprite, driven by animLoop) ─── -->
+<g id="player-sprite" transform="translate(658,448)">
+  <image id="player-img" href="assets/idle_front.png" x="0" y="0" width="44" height="44" preserveAspectRatio="xMidYMid meet"/>
 </g>
 
 <!-- ─── VEHICLES ─── -->
-<g id="tram-g" transform="translate(120,388)">
-  <rect width="54" height="24" fill="#E8B820" rx="4"/>
-  <rect x="3" y="2" width="10" height="13" fill="#C0E8FF" rx="1"/>
-  <rect x="17" y="2" width="10" height="13" fill="#C0E8FF" rx="1"/>
-  <rect x="31" y="2" width="10" height="13" fill="#C0E8FF" rx="1"/>
-  <rect x="2" y="20" width="7" height="7" fill="#222" rx="3.5"/>
-  <rect x="43" y="20" width="7" height="7" fill="#222" rx="3.5"/>
+<g id="tram-g" transform="translate(100,454)">
+  <image href="assets/tram.png" x="0" y="-4" width="70" height="36" preserveAspectRatio="xMidYMid meet"/>
 </g>
-<g id="bus-g" transform="translate(750,389)">
-  <rect width="62" height="24" fill="#4ABAFF" rx="3"/>
-  <rect x="3" y="2" width="12" height="13" fill="#E0F8FF" rx="1"/>
-  <rect x="20" y="2" width="12" height="13" fill="#E0F8FF" rx="1"/>
-  <rect x="37" y="2" width="12" height="13" fill="#E0F8FF" rx="1"/>
-  <rect x="2" y="20" width="8" height="7" fill="#111" rx="4"/>
-  <rect x="51" y="20" width="8" height="7" fill="#111" rx="4"/>
-  <text x="31" y="37" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="8" fill="#4ABAFF">⚡BUS</text>
+<g id="bus-g" transform="translate(900,455)">
+  <image href="assets/bus.png" x="0" y="-4" width="76" height="36" preserveAspectRatio="xMidYMid meet"/>
 </g>
 
-<!-- ─── ENVIRONMENTAL OVERLAYS (appear after bad tasks) ─── -->
-<!-- Parking lot (bad task visual) -->
+<!-- ─── BAD TASK OVERLAYS ─── -->
 <g id="bad-parking" opacity="0">
-  <rect x="80" y="302" width="140" height="70" fill="#888" rx="3" opacity=".7"/>
-  <line x1="105" y1="302" x2="105" y2="372" stroke="#FFF" stroke-width="1" opacity=".5"/>
-  <line x1="130" y1="302" x2="130" y2="372" stroke="#FFF" stroke-width="1" opacity=".5"/>
-  <line x1="155" y1="302" x2="155" y2="372" stroke="#FFF" stroke-width="1" opacity=".5"/>
-  <line x1="180" y1="302" x2="180" y2="372" stroke="#FFF" stroke-width="1" opacity=".5"/>
-  <text x="150" y="292" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="10" fill="#E84040">🅿️ PARCHEGGIO</text>
+  <rect x="80" y="358" width="160" height="80" fill="#888" rx="3" opacity=".7"/>
+  <line x1="110" y1="358" x2="110" y2="438" stroke="#FFF" stroke-width="1" opacity=".5"/>
+  <line x1="140" y1="358" x2="140" y2="438" stroke="#FFF" stroke-width="1" opacity=".5"/>
+  <line x1="170" y1="358" x2="170" y2="438" stroke="#FFF" stroke-width="1" opacity=".5"/>
+  <line x1="200" y1="358" x2="200" y2="438" stroke="#FFF" stroke-width="1" opacity=".5"/>
+  <text x="160" y="348" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="11" fill="#E84040">🅿️ PARCHEGGIO</text>
 </g>
-<!-- Coal plant (bad task visual) -->
 <g id="bad-coal" opacity="0">
-  <rect x="910" y="440" width="80" height="70" fill="#404040" rx="4"/>
-  <rect x="960" y="420" width="16" height="90" fill="#333" rx="2"/>
-  <rect x="978" y="428" width="12" height="82" fill="#444" rx="2"/>
-  <circle cx="968" cy="418" r="10" fill="#888" opacity=".7"><animate attributeName="cy" values="418;400;382" dur="1.8s" repeatCount="indefinite"/><animate attributeName="opacity" values=".7;.35;0" dur="1.8s" repeatCount="indefinite"/><animate attributeName="r" values="10;14;18" dur="1.8s" repeatCount="indefinite"/></circle>
-  <text x="940" y="436" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="9" fill="#E84040">CARBONE</text>
+  <rect x="1130" y="380" width="90" height="80" fill="#404040" rx="4"/>
+  <rect x="1190" y="356" width="18" height="104" fill="#333" rx="2"/>
+  <circle cx="1199" cy="354" r="12" fill="#888" opacity=".7">
+    <animate attributeName="cy" values="354;334;314" dur="1.8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values=".7;.35;0" dur="1.8s" repeatCount="indefinite"/>
+    <animate attributeName="r" values="12;16;20" dur="1.8s" repeatCount="indefinite"/>
+  </circle>
+  <text x="1160" y="374" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="10" fill="#E84040">CARBONE</text>
 </g>
-<!-- Highway expansion (bad task visual) -->
 <g id="bad-highway" opacity="0">
-  <rect x="74" y="435" width="448" height="12" fill="#FF8040" rx="2" opacity=".8"/>
-  <text x="290" y="430" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="10" fill="#E84040">🛣️ AUTOSTRADA URBANA</text>
+  <rect x="66" y="496" width="590" height="14" fill="#FF8040" rx="2" opacity=".8"/>
+  <text x="360" y="488" text-anchor="middle" font-family="'Fredoka One',cursive" font-size="11" fill="#E84040">🛣️ AUTOSTRADA URBANA</text>
 </g>
 
 </svg>
@@ -641,6 +676,22 @@ body{font-family:'Nunito',sans-serif;background:#B8D4A8;overflow:hidden;height:1
   </div>
 </div>
 
+<!-- ═══ PROXIMITY HINT ═══ -->
+<div id="proximity-hint">Premi <strong>T</strong> per vedere le proposte</div>
+
+<!-- ═══ TASK OVERLAY BACKGROUND ═══ -->
+<div id="task-overlay-bg" onclick="closeTaskPanel()"></div>
+
+<!-- ═══ TASK PANEL (T key) ═══ -->
+<div id="task-panel" class="panel">
+  <div class="panel-hdr">
+    <span id="tp-icon" style="font-size:26px"></span>
+    <span class="panel-title" id="tp-title">Proposte</span>
+    <button class="panel-x" onclick="closeTaskPanel()">✕</button>
+  </div>
+  <div class="panel-body" id="tp-tasks"></div>
+</div>
+
 <script>
 // ═══════════════════════════════════════════════════════════════
 // GAME STATE
@@ -655,6 +706,21 @@ const G = {
 };
 const TOTAL_TASKS = 12; // 8 good + 4 bad
 const MAX_BUDGET = 500000;
+
+// ─── PLAYER ───
+const PLAYER = {
+  x: 550, y: 405, // SVG world coords
+  speed: 2.2,
+};
+// District proximity zones: {id, cx, cy, r}
+const DISTRICT_ZONES = [
+  {id:'mudtown', cx:292, cy:236, r:145},
+  {id:'iron',    cx:805, cy:236, r:145},
+  {id:'solaris', cx:292, cy:590, r:145},
+  {id:'neon',    cx:805, cy:590, r:145},
+];
+let nearDistrict = null; // currently in proximity
+let taskPanelOpen = false;
 
 // ═══════════════════════════════════════════════════════════════
 // TASK DATA
@@ -890,31 +956,23 @@ function renderTasks(id){
     const isDone = t.done;
     const isGood = t.good;
     const canAfford = G.budget >= t.cost;
-    const effectStr = isGood
-      ? `🚌 +${t.rewards.mob} 🌿 +${t.rewards.env} 😊 +${t.rewards.hap}`
-      : `🚌 ${t.rewards.mob} 🌿 ${t.rewards.env} 😊 ${t.rewards.hap}`;
     const costColor = canAfford ? 'tag-cost' : 'tag-cost" style="background:#FDECEA;color:#900';
     let btnHtml = '';
     if(isDone){
-      btnHtml = `<div style="font-size:12px;font-weight:700;color:${isGood?'#1DB97A':'#C03030'};margin-top:8px">${isGood?'✅ Intervento completato':'❌ Scelta già fatta — effetti irreversibili'}</div>`;
+      btnHtml = `<div style="font-size:12px;font-weight:700;color:#888;margin-top:8px">${isGood?'✅ Intervento completato':'✅ Proposta già firmata'}</div>`;
     } else {
       const disabled = !canAfford ? 'disabled' : '';
-      const btnClass = isGood ? 'good-btn' : 'bad-btn';
-      const btnLabel = canAfford
-        ? (isGood ? '✅ Approva Intervento' : '⚠️ Firma la Proposta')
-        : '❌ Budget insufficiente';
-      btnHtml = `<button class="task-btn ${btnClass}" ${disabled} onclick="requestConfirm('${id}','${t.id}')">${btnLabel}</button>`;
+      const btnLabel = canAfford ? '📋 Esamina Proposta' : '❌ Budget insufficiente';
+      btnHtml = `<button class="task-btn good-btn" ${disabled} onclick="requestConfirm('${id}','${t.id}')">${btnLabel}</button>`;
     }
     return `
-    <div class="task-card ${isDone?(isGood?'done':'bad-done'):''} ${!isGood?'bad':''}">
+    <div class="task-card ${isDone?(isGood?'done':'bad-done'):''}">
       <div class="task-top">
         <div class="task-name">${t.name}</div>
-        <span class="task-type-badge ${isGood?'good':'bad'}">${isGood?'✅ BUONA':'⚠️ SOSPETTA'}</span>
       </div>
       <div class="task-desc">${t.desc}</div>
       <div class="task-meta">
         <span class="tag ${costColor}">💰 ${t.cost.toLocaleString('it')} €</span>
-        <span class="tag ${isGood?'tag-good':'tag-bad'}">${effectStr}</span>
         <span class="tag" style="background:#F0F0F0;color:#555">⏱️ ${t.years} anno${t.years>1?'i':''}</span>
       </div>
       ${btnHtml}
@@ -932,15 +990,13 @@ function requestConfirm(distId, taskId){
   if(!t || t.done) return;
   pendingTask = {distId, taskId};
   const isGood = t.good;
-  document.getElementById('cf-emoji').textContent = isGood ? '✅' : '⚠️';
-  document.getElementById('cf-title').textContent = isGood ? 'Confermi l\'intervento?' : 'Sei sicuro di firmare?';
-  const effects = isGood
-    ? `Costo: ${t.cost.toLocaleString('it')} € | +${t.rewards.mob} Mobilità | +${t.rewards.env} Ambiente | +${t.rewards.hap} Felicità`
-    : `⚠️ ATTENZIONE: questa proposta ha effetti NEGATIVI!\nCosto: ${t.cost.toLocaleString('it')} € | ${t.rewards.mob} Mobilità | ${t.rewards.env} Ambiente | ${t.rewards.hap} Felicità`;
+  document.getElementById('cf-emoji').textContent = '📋';
+  document.getElementById('cf-title').textContent = 'Confermi la proposta?';
+  const effects = `Costo: ${t.cost.toLocaleString('it')} € — ${t.years} anno${t.years>1?'i':''}`;
   document.getElementById('cf-body').textContent = effects;
   const btn = document.getElementById('cb-yes');
-  btn.textContent = isGood ? '✅ Approva' : '⚠️ Firma lo stesso';
-  btn.className = isGood ? 'cb-yes' : 'cb-yes bad';
+  btn.textContent = '✅ Conferma';
+  btn.className = 'cb-yes';
   document.getElementById('confirm-overlay').classList.add('show');
 }
 function cancelConfirm(){ document.getElementById('confirm-overlay').classList.remove('show'); pendingTask=null; }
@@ -974,9 +1030,9 @@ function executeTask(distId, taskId){
   if(t.good){
     const income = Math.round(t.cost * 0.18);
     G.budget += income;
-    showToast(`✅ ${t.name} completata! +${income.toLocaleString('it')}€ da indotto`, 'ok');
+    showToast(`✅ ${t.name} approvata! +${income.toLocaleString('it')}€ da indotto`, 'ok');
   } else {
-    showToast(`❌ Scelta sbagliata! Gli effetti negativi si faranno sentire...`, 'warn');
+    showToast(`✅ ${t.name} firmata. Gli effetti si vedranno presto.`, 'info');
   }
 
   // Visual feedback on map
@@ -1109,22 +1165,122 @@ function showToast(msg, type='ok'){
 }
 
 // ═══════════════════════════════════════════════════════════════
-// VEHICLE ANIMATION
+// VEHICLE + PLAYER ANIMATION LOOP
 // ═══════════════════════════════════════════════════════════════
-let tramX = 120, busX = 750, playerFrame = 0;
+let tramX = 120, busX = 120, playerFrame = 0;
 function animLoop(){
+  // ─ Vehicles ─
   tramX = (tramX + 0.6) % 1000;
-  busX -= 0.5; if(busX < 70) busX = 970;
+  busX -= 0.18; if(busX < 70) busX = 970;
   const tram = document.getElementById('tram-g');
   const bus  = document.getElementById('bus-g');
   if(tram) tram.setAttribute('transform',`translate(${tramX},388)`);
   if(bus)  bus.setAttribute('transform', `translate(${busX},389)`);
-  // Player idle sprite flicker
+
+  // ─ Player WASD movement ─
+  if(!taskPanelOpen){
+    let dx=0, dy=0;
+    if(keysDown['w']||keysDown['arrowup'])    dy=-1;
+    if(keysDown['s']||keysDown['arrowdown'])  dy= 1;
+    if(keysDown['a']||keysDown['arrowleft'])  dx=-1;
+    if(keysDown['d']||keysDown['arrowright']) dx= 1;
+    if(dx!==0&&dy!==0){dx*=0.707;dy*=0.707;}
+    PLAYER.x = Math.max(80,  Math.min(1020, PLAYER.x + dx*PLAYER.speed));
+    PLAYER.y = Math.max(100, Math.min(740,  PLAYER.y + dy*PLAYER.speed));
+    const pSprite = document.getElementById('player-sprite');
+    if(pSprite) pSprite.setAttribute('transform',`translate(${PLAYER.x-22},${PLAYER.y-22})`);
+  }
+
+  // ─ Player idle sprite flicker ─
   playerFrame = (playerFrame+1)%60;
   const pImg = document.getElementById('player-img');
   if(pImg) pImg.setAttribute('href', playerFrame<30 ? 'assets/idle_front.png' : 'assets/idle_back.png');
+
+  // ─ Proximity detection ─
+  let found = null;
+  for(const z of DISTRICT_ZONES){
+    const ddx=PLAYER.x-z.cx, ddy=PLAYER.y-z.cy;
+    if(Math.sqrt(ddx*ddx+ddy*ddy) < z.r){ found=z.id; break; }
+  }
+  if(found !== nearDistrict){
+    nearDistrict = found;
+    const hint = document.getElementById('proximity-hint');
+    if(found){
+      const d = DISTRICTS[found];
+      hint.innerHTML = `${d.icon} <strong>${d.name}</strong> — Premi <strong>[T]</strong> per le proposte`;
+      hint.classList.add('visible');
+    } else {
+      hint.classList.remove('visible');
+    }
+  }
+
   requestAnimationFrame(animLoop);
 }
+
+// ─── Keyboard input ───
+const keysDown = {};
+window.addEventListener('keydown', e=>{
+  keysDown[e.key.toLowerCase()] = true;
+  if(e.key.toLowerCase()==='t'){
+    if(taskPanelOpen){ closeTaskPanel(); }
+    else if(nearDistrict){ openTaskPanel(nearDistrict); }
+  }
+  if(['arrowup','arrowdown','arrowleft','arrowright'].includes(e.key.toLowerCase())) e.preventDefault();
+});
+window.addEventListener('keyup', e=>{ keysDown[e.key.toLowerCase()] = false; });
+
+// ─── Task Panel (T-key) ───
+function openTaskPanel(distId){
+  const d = DISTRICTS[distId];
+  document.getElementById('tp-icon').textContent = d.icon;
+  document.getElementById('tp-title').textContent = d.name + ' — Proposte';
+  renderTasksInPanel(distId);
+  document.getElementById('task-panel').style.display = 'block';
+  document.getElementById('task-overlay-bg').style.display = 'block';
+  taskPanelOpen = true;
+}
+function closeTaskPanel(){
+  document.getElementById('task-panel').style.display = 'none';
+  document.getElementById('task-overlay-bg').style.display = 'none';
+  taskPanelOpen = false;
+}
+
+function renderTasksInPanel(id){
+  const d = DISTRICTS[id];
+  const container = document.getElementById('tp-tasks');
+  container.innerHTML = d.tasks.map(t=>{
+    const isDone = t.done;
+    const isGood = t.good;
+    const canAfford = G.budget >= t.cost;
+    const costColor = canAfford ? 'tag-cost' : 'tag-cost" style="background:#FDECEA;color:#900';
+    let btnHtml = '';
+    if(isDone){
+      btnHtml = `<div style="font-size:12px;font-weight:700;color:#888;margin-top:8px">✅ Proposta già eseguita</div>`;
+    } else {
+      const disabled = !canAfford ? 'disabled' : '';
+      const btnLabel = canAfford ? '📋 Esamina Proposta' : '❌ Budget insufficiente';
+      btnHtml = `<button class="task-btn good-btn" ${disabled} onclick="requestConfirmTP('${id}','${t.id}')">${btnLabel}</button>`;
+    }
+    return `
+    <div class="task-card ${isDone?(isGood?'done':'bad-done'):''}">
+      <div class="task-top"><div class="task-name">${t.name}</div></div>
+      <div class="task-desc">${t.desc}</div>
+      <div class="task-meta">
+        <span class="tag ${costColor}">💰 ${t.cost.toLocaleString('it')} €</span>
+        <span class="tag" style="background:#F0F0F0;color:#555">⏱️ ${t.years} anno${t.years>1?'i':''}</span>
+      </div>
+      ${btnHtml}
+    </div>`;
+  }).join('');
+}
+
+let _tpPendingDistrict = null;
+function requestConfirmTP(distId, taskId){
+  _tpPendingDistrict = distId;
+  closeTaskPanel();
+  requestConfirm(distId, taskId);
+}
+
 
 // ═══════════════════════════════════════════════════════════════
 // UTILS
