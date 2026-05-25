@@ -1113,7 +1113,7 @@ function showToast(msg, type='ok'){
 // ═══════════════════════════════════════════════════════════════
 let tramX = 120, busX = 750, playerFrame = 0;
 function animLoop(){
-  tramX = (tramX + 0.6) % 1000 + 70;
+  tramX -= 0.5; if(tramX < 70) tramX = 970;
   busX -= 0.5; if(busX < 70) busX = 970;
   const tram = document.getElementById('tram-g');
   const bus  = document.getElementById('bus-g');
