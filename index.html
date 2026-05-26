@@ -28,7 +28,6 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
 #hud{position:fixed;top:0;left:0;right:0;height:58px;background:rgba(12,22,12,.93);backdrop-filter:blur(8px);display:flex;align-items:center;padding:0 14px;gap:10px;z-index:200;border-bottom:2px solid rgba(255,255,255,.08)}
 .hud-title{font-family:'Fredoka One',cursive;color:#fff;font-size:20px;letter-spacing:1px}
 .hud-pill{border-radius:22px;padding:4px 13px;font-size:13px;font-weight:800;display:flex;align-items:center;gap:5px}
-.hud-year{background:rgba(245,200,66,.15);color:var(--gold);border:1.5px solid var(--gold)}
 .hud-budget{background:rgba(29,185,122,.13);color:#3fe89a;border:1.5px solid #1DB97A}
 .hud-budget.low{background:rgba(232,64,64,.13);color:#ff8080;border-color:var(--red)}
 .hud-spacer{flex:1}
@@ -37,6 +36,7 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
 .hud-bar{height:100%;border-radius:3px;transition:width .5s}
 .hud-btn{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.18);color:#ddd;padding:5px 13px;border-radius:18px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;font-size:12px;transition:background .2s;white-space:nowrap}
 .hud-btn:hover{background:rgba(255,255,255,.18)}
+.hud-task-indicator{background:rgba(245,200,66,.15);color:var(--gold);border:1.5px solid var(--gold);border-radius:22px;padding:4px 13px;font-size:13px;font-weight:800}
 
 /* ─── CITY VIEWPORT ─── */
 #city-wrap{position:fixed;top:58px;left:0;right:0;bottom:96px;overflow:hidden;cursor:grab;background:#2a3a2a}
@@ -46,7 +46,8 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
 
 /* ─── MAP CONTAINER ─── */
 #map-container{position:relative;width:1400px;height:900px}
-#map-img{width:100%;height:100%;display:block;image-rendering:pixelated}
+#map-img{width:100%;height:100%;display:block;image-rendering:pixelated;transition:opacity .4s}
+#map-img.fading{opacity:0}
 
 /* ─── DISTRICT ZONE OVERLAYS ─── */
 .zone-overlay{position:absolute;border-radius:12px;cursor:pointer;transition:background .2s,box-shadow .2s;border:3px solid transparent}
@@ -58,42 +59,17 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
 @keyframes labelFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 
 /* ─── TASK BADGE ─── */
-.task-badge-dot{position:absolute;width:22px;height:22px;background:#E84040;border:2.5px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Fredoka One',cursive;font-size:13px;color:#fff;box-shadow:0 3px 8px rgba(0,0,0,0.4);animation:bob 1.4s ease-in-out infinite;pointer-events:none}
+.task-badge-dot{position:absolute;width:28px;height:28px;background:#E84040;border:2.5px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Fredoka One',cursive;font-size:14px;color:#fff;box-shadow:0 3px 8px rgba(0,0,0,0.4);animation:bob 1.4s ease-in-out infinite;cursor:pointer;z-index:20}
+.task-badge-dot.done{background:#1DB97A;animation:none}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 
-/* ─── MAP MODIFICATION OVERLAYS ─── */
-.map-mod{position:absolute;pointer-events:none;transition:opacity 0.8s ease}
-.map-mod.hidden{opacity:0}
-.map-mod.visible{opacity:1}
-
-/* Mudtown mods */
-#mod-mud-bike{left:8%;top:30%;width:25%;height:6%}
-#mod-mud-bus{left:5%;top:44%;width:40%;height:8%}
-#mod-mud-parking{left:5%;top:52%;width:32%;height:14%}
-
-/* Iron District mods */
-#mod-iro-elec{left:50%;top:10%;width:22%;height:20%}
-#mod-iro-tram{left:50%;top:38%;width:48%;height:5%}
-#mod-iro-coal{left:83%;top:20%;width:15%;height:18%}
-
-/* Solaris mods */
-#mod-sol-bike{left:36%;top:56%;width:22%;height:12%}
-#mod-sol-zone30{left:38%;top:72%;width:20%;height:12%}
-#mod-sol-highway{left:5%;top:54%;width:44%;height:7%}
-
-/* Neon District mods */
-#mod-neo-nightbus{left:50%;top:56%;width:20%;height:10%}
-#mod-neo-hub{left:84%;top:72%;width:14%;height:14%}
-
 /* ─── PLAYER ─── */
-#player-dot{position:absolute;width:20px;height:20px;background:radial-gradient(circle,#fff 30%,#4ABAFF 70%);border-radius:50%;border:2.5px solid #fff;box-shadow:0 0 14px rgba(74,186,255,0.9),0 0 0 4px rgba(74,186,255,0.3);pointer-events:none;transform:translate(-50%,-50%);transition:left .05s,top .05s}
-#player-dot::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:2px dashed rgba(74,186,255,0.5);animation:playerRing 2s linear infinite}
-@keyframes playerRing{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+#player-sprite{position:absolute;width:36px;height:40px;pointer-events:none;transform:translate(-50%,-50%);transition:left .05s,top .05s,transform .1s;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:transparent;}
 
 /* ─── VEHICLE DOTS ─── */
 .vehicle-dot{position:absolute;pointer-events:none;font-size:20px;transform:translate(-50%,-50%)}
 
-/* ─── ZOOM IN ZONE PANEL ─── */
+/* ─── ZONE ZOOM PANEL ─── */
 #zone-panel{position:fixed;top:58px;left:0;right:0;bottom:96px;z-index:100;pointer-events:none;opacity:0;transition:opacity .4s}
 #zone-panel.visible{opacity:1;pointer-events:all}
 #zone-back{position:absolute;top:14px;left:14px;background:rgba(12,22,12,.88);border:1.5px solid rgba(255,255,255,.25);color:#fff;font-family:'Fredoka One',cursive;font-size:15px;padding:9px 20px;border-radius:30px;cursor:pointer;display:flex;align-items:center;gap:8px;backdrop-filter:blur(8px);transition:background .2s;z-index:101}
@@ -121,27 +97,34 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
 .panel-x:hover{background:rgba(0,0,0,.18)}
 .panel-body{padding:0 18px 18px;max-height:58vh;overflow-y:auto;scrollbar-width:thin}
 
-/* ─── DISTRICT PANEL ─── */
-#dp{bottom:106px;left:16px;width:350px;display:none}
-.dp-badge{display:inline-block;padding:3px 14px;border-radius:16px;font-size:11px;font-weight:700;letter-spacing:1px;color:#fff;margin-bottom:10px}
-.dp-desc{font-size:13px;color:#555;line-height:1.6;margin-bottom:14px;border-left:3px solid #ddd;padding-left:10px}
-.tasks-hdr{font-size:11px;font-weight:900;color:#555;margin-bottom:8px;letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:6px}
-.task-card{background:#fff;border-radius:15px;padding:13px;margin-bottom:9px;border:2.5px solid #eee;transition:border-color .2s,box-shadow .2s}
-.task-card:not(.done):not(.bad-done){cursor:pointer}
-.task-card:not(.done):not(.bad-done):hover{border-color:#1DB97A;box-shadow:0 4px 16px rgba(29,185,122,.15)}
-.task-card.done{opacity:.55;border-color:#ddd}
-.task-card.bad-done{opacity:.55;border-color:#E84040}
-.task-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px}
-.task-name{font-weight:900;font-size:14px;color:#1a1a1a}
-.task-desc{font-size:12px;color:#666;margin-bottom:9px;line-height:1.45}
-.task-meta{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-bottom:9px}
-.tag{border-radius:9px;padding:2px 9px;font-size:11px;font-weight:700}
-.tag-cost{background:#FEF3E0;color:#966000}
-.task-btn{width:100%;border:none;padding:10px;border-radius:12px;font-family:'Nunito',sans-serif;font-weight:900;font-size:13px;cursor:pointer;transition:background .2s,transform .1s;letter-spacing:.3px}
-.task-btn:active{transform:scale(.98)}
-.task-btn.good-btn{background:var(--teal);color:#fff}
-.task-btn.good-btn:hover{background:#169960}
-.task-btn:disabled{background:#ccc;color:#999;cursor:not-allowed}
+/* ─── TASK PANEL (T-key) ─── */
+#task-panel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:350;background:var(--panel);border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.45);width:420px;max-width:94vw;display:none;animation:slideUp .28s cubic-bezier(.34,1.56,.64,1)}
+#task-panel .panel-hdr{padding:18px 18px 10px;display:flex;align-items:center;gap:10px}
+#task-panel .panel-title{font-family:'Fredoka One',cursive;font-size:21px;flex:1}
+#task-panel .panel-body{padding:0 18px 18px;max-height:62vh;overflow-y:auto;scrollbar-width:thin}
+#task-overlay-bg{position:fixed;inset:0;z-index:340;background:rgba(0,0,0,.5);display:none}
+#transition-overlay{position:fixed;inset:0;z-index:999;pointer-events:none;background:rgba(0,0,0,0);opacity:0;transition:opacity .3s ease;}
+#transition-overlay.active{opacity:1;background:rgba(0,0,0,.85);}
+#transition-overlay.flash{animation:screenFlash .35s ease-out;}
+@keyframes screenFlash{0%{background:rgba(255,255,255,.9);}50%{background:rgba(255,255,255,.3);}100%{background:rgba(0,0,0,.85);}}
+
+/* ─── NPC BUBBLE ─── */
+.npc-complaint{background:#fff3cd;border:2px solid #f0c040;border-radius:14px;padding:14px;margin-bottom:14px;font-size:13px;color:#5a3e00;line-height:1.6;position:relative}
+.npc-complaint::before{content:'💬';font-size:20px;position:absolute;top:-12px;left:12px;background:#fff3cd;padding:0 4px}
+.npc-name-badge{font-family:'Fredoka One',cursive;font-size:14px;color:#8a5a00;margin-bottom:6px}
+
+/* ─── CHOICE CARDS ─── */
+.choice-card{background:#fff;border-radius:16px;padding:16px;margin-bottom:10px;border:2.5px solid #eee;cursor:pointer;transition:border-color .2s,box-shadow .2s,transform .1s}
+.choice-card:hover{border-color:#1DB97A;box-shadow:0 4px 18px rgba(29,185,122,.18);transform:translateY(-2px)}
+.choice-card:active{transform:translateY(0)}
+.choice-card.selected{border-color:#1DB97A;background:#f0fff7;box-shadow:0 4px 18px rgba(29,185,122,.22)}
+.choice-card.done{opacity:.6;cursor:default;pointer-events:none}
+.choice-title{font-weight:900;font-size:15px;color:#1a1a1a;margin-bottom:5px}
+.choice-cost{font-size:12px;color:#966000;font-weight:700;background:#FEF3E0;border-radius:8px;display:inline-block;padding:2px 10px;margin-bottom:8px}
+.choice-desc{font-size:12px;color:#666;line-height:1.5}
+.choice-btn{width:100%;border:none;padding:10px;border-radius:12px;font-family:'Nunito',sans-serif;font-weight:900;font-size:13px;cursor:pointer;transition:background .2s;background:var(--teal);color:#fff;margin-top:10px}
+.choice-btn:hover{background:#169960}
+.choice-btn:disabled{background:#ccc;color:#999;cursor:not-allowed}
 
 /* ─── CONFIRM DIALOG ─── */
 #confirm-overlay{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center}
@@ -155,15 +138,6 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
 .cb-yes{background:var(--teal);color:#fff}
 .cb-no{background:#eee;color:#555}
 .cb-no:hover{background:#ddd}
-
-/* ─── NPC ─── */
-#npc{bottom:106px;right:16px;width:310px;display:none}
-.npc-row{display:flex;gap:11px;align-items:flex-start;margin-bottom:10px}
-.npc-face{width:52px;height:52px;border-radius:50%;border:3px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,.2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:26px;background:#E0ECF4}
-.npc-name{font-weight:900;font-size:12px;color:#333;margin-bottom:3px}
-.npc-bubble{background:#fff;border-radius:13px;padding:11px;font-size:12px;color:#444;line-height:1.55;border:2px solid #eee;flex:1}
-.npc-ok{width:100%;background:#4ABAFF;color:#002;border:none;padding:9px;border-radius:11px;font-family:'Nunito',sans-serif;font-weight:800;font-size:12px;cursor:pointer;transition:background .2s}
-.npc-ok:hover{background:#2a9adf}
 
 /* ─── TOAST ─── */
 #toast{position:fixed;top:74px;left:50%;transform:translateX(-50%) translateY(-90px);padding:11px 26px;border-radius:40px;font-weight:800;font-size:14px;z-index:999;transition:transform .38s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap;max-width:90vw}
@@ -179,41 +153,32 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
 .intro-box h2{font-family:'Fredoka One',cursive;font-size:26px;color:#0d2a0d;margin-bottom:12px}
 .intro-box p{font-size:14px;color:#555;line-height:1.7;margin-bottom:14px}
 .intro-box ul{padding-left:18px;color:#444;font-size:13px;line-height:2.1}
-.intro-box .warn-note{background:#FFF3CD;border-left:4px solid #E8A040;border-radius:0 10px 10px 0;padding:10px 14px;font-size:12px;color:#6a4000;margin-top:12px;line-height:1.6}
 .intro-go{margin-top:20px;width:100%;background:var(--teal);color:#fff;border:none;padding:14px;border-radius:14px;font-family:'Fredoka One',cursive;font-size:20px;cursor:pointer;transition:background .2s}
 .intro-go:hover{background:#169960}
 
-/* ─── WIN / LOSE ─── */
+/* ─── END SCREEN ─── */
 #end-screen{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center}
-.end-box{background:#fff;border-radius:28px;padding:44px;text-align:center;max-width:460px;width:92%;box-shadow:0 40px 100px rgba(0,0,0,.5)}
+.end-box{background:#fff;border-radius:28px;padding:44px;text-align:center;max-width:500px;width:92%;box-shadow:0 40px 100px rgba(0,0,0,.5)}
 .end-emoji{font-size:76px;animation:eBounce .55s ease infinite alternate}
 @keyframes eBounce{from{transform:translateY(0)}to{transform:translateY(-10px)}}
 .end-title{font-family:'Fredoka One',cursive;font-size:34px;margin:14px 0 6px}
-.end-sub{color:#666;font-size:14px;line-height:1.7;margin-bottom:18px}
-.end-score{font-size:30px;font-weight:900;margin:10px 0 20px}
+.end-sub{color:#666;font-size:13px;line-height:1.8;margin-bottom:18px;white-space:pre-line}
+.end-stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px}
+.end-stat-box{border-radius:14px;padding:12px;text-align:center}
+.end-stat-box .label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.end-stat-box .value{font-family:'Fredoka One',cursive;font-size:26px}
 .end-again{background:var(--gold);color:#222;border:none;padding:13px 38px;border-radius:40px;font-family:'Fredoka One',cursive;font-size:20px;cursor:pointer;box-shadow:0 4px 0 #7a5800}
 
 /* ─── PROXIMITY HINT ─── */
 #proximity-hint{position:fixed;bottom:106px;left:50%;transform:translateX(-50%);background:rgba(10,20,10,.88);color:#7defa0;border:2px solid #1DB97A;border-radius:40px;padding:8px 24px;font-family:'Fredoka One',cursive;font-size:15px;z-index:250;pointer-events:none;opacity:0;transition:opacity .3s;white-space:nowrap}
 #proximity-hint.visible{opacity:1}
 
-/* ─── TASK PANEL (T-key) ─── */
-#task-panel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:350;background:var(--panel);border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.45);width:370px;max-width:94vw;display:none;animation:slideUp .28s cubic-bezier(.34,1.56,.64,1)}
-#task-panel .panel-hdr{padding:18px 18px 10px;display:flex;align-items:center;gap:10px}
-#task-panel .panel-title{font-family:'Fredoka One',cursive;font-size:21px;flex:1}
-#task-panel .panel-body{padding:0 18px 18px;max-height:62vh;overflow-y:auto;scrollbar-width:thin}
-#task-overlay-bg{position:fixed;inset:0;z-index:340;background:rgba(0,0,0,.5);display:none}
+/* ─── TASK PROGRESS BAR ─── */
+#task-progress-bar{position:fixed;top:58px;left:0;right:0;height:4px;background:rgba(255,255,255,.05);z-index:199}
+#task-progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--gold));transition:width .6s;width:0%}
 
-/* ─── ZONE ZOOM MODIFICATION LABELS ─── */
-.mod-label{position:absolute;pointer-events:none;font-family:'Fredoka One',cursive;font-size:11px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.9);padding:4px 10px;border-radius:20px;white-space:nowrap;transition:opacity .8s}
-.mod-label.good-mod{background:rgba(29,185,122,.9)}
-.mod-label.bad-mod{background:rgba(232,64,64,.9)}
-.mod-label.hidden{opacity:0}
-.mod-label.visible{opacity:1}
-
-/* ─── STAR BADGES ─── */
-.district-star{position:absolute;font-size:22px;animation:starPop .4s cubic-bezier(.34,1.56,.64,1) forwards;pointer-events:none}
-@keyframes starPop{from{transform:scale(0) rotate(-30deg);opacity:0}to{transform:scale(1) rotate(0deg);opacity:1}}
+/* ─── SEQUENCE INDICATOR ─── */
+#sequence-indicator{position:fixed;top:70px;right:14px;background:rgba(0,0,0,.7);border:1.5px solid rgba(255,255,255,.15);color:#aaa;font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;z-index:210;letter-spacing:1px}
 </style>
 </head>
 <body>
@@ -221,7 +186,7 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
 <!-- ═══ TITLE ═══ -->
 <div id="title-screen">
   <div class="title-logo">🏙️ KHAOS CITY</div>
-  <div class="title-sub">Mobilità Sostenibile 2025–2030</div>
+  <div class="title-sub">Gestione Urbana</div>
   <div class="title-year">SEI IL NUOVO SINDACO — SCEGLI BENE</div>
   <button class="title-btn" onclick="startGame()">▶&nbsp; INIZIA</button>
 </div>
@@ -230,16 +195,15 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
 <div id="intro-overlay" class="hidden">
   <div class="intro-box">
     <h2>🎖️ Benvenuto, Sindaco!</h2>
-    <p>Khaos City è in crisi di mobilità. Hai <strong>budget limitato</strong> e 5 anni (2025–2030) per trasformare la città.</p>
+    <p>Khaos City ha bisogno di te. Hai <strong>250.000 €</strong> e 4 decisioni cruciali da prendere per trasformare la città.</p>
     <ul>
-      <li>🗺️ Clicca su un quartiere o avvicinati con WASD</li>
-      <li>🔍 La mappa zooma automaticamente nel quartiere selezionato</li>
-      <li>✅ Scegli task <em>buone</em> per migliorare la città</li>
-      <li>⚠️ Alcune proposte sembrano convenienti ma <em>danneggiano</em> la città</li>
-      <li>💰 Il budget è stretto — ogni scelta conta</li>
-      <li>🏆 Obiettivo: Mobilità ≥75, Ambiente ≥70, Felicità ≥75</li>
+      <li>🗺️ Avvicinati a un quartiere con <strong>WASD</strong> o le frecce</li>
+      <li>⌨️ Premi <strong>[T]</strong> quando sei vicino a un quartiere per vedere le proposte</li>
+      <li>🏚️ Ogni intervento costa <strong>50.000 €</strong></li>
+      <li>📌 I quartieri devono essere completati <strong>in ordine</strong></li>
+      <li>📊 Le tue scelte cambieranno la mappa e le statistiche della città</li>
+      <li>🔍 Ogni scelta ha conseguenze — alcune visibili, alcune no!</li>
     </ul>
-    <div class="warn-note">⚠️ <strong>Attenzione:</strong> non tutte le proposte sono oneste. Lobbisti e speculatori vogliono convincerti a fare scelte sbagliate. Leggi bene prima di firmare!</div>
     <button class="intro-go" onclick="closeIntro()">Partiamo! 🚀</button>
   </div>
 </div>
@@ -247,24 +211,29 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
 <!-- ═══ HUD ═══ -->
 <div id="hud">
   <span class="hud-title">🏙️ KHAOS CITY</span>
-  <span class="hud-pill hud-year" id="hud-year">ANNO 2025</span>
-  <span class="hud-pill hud-budget" id="hud-budget-pill">💰 <span id="hud-budget">180.000</span> €</span>
+  <span class="hud-pill hud-budget" id="hud-budget-pill">💰 <span id="hud-budget">250.000</span> €</span>
   <div class="hud-spacer"></div>
-  <div class="hud-stat">🚌
-    <div class="hud-bar-wrap"><div class="hud-bar" id="bar-mob" style="background:#4ABAFF;width:28%"></div></div>
-    <span id="val-mob">28</span>
-  </div>
-  <div class="hud-stat">🌿
-    <div class="hud-bar-wrap"><div class="hud-bar" id="bar-env" style="background:#3DBE6A;width:22%"></div></div>
-    <span id="val-env">22</span>
+  <div class="hud-stat">🏭
+    <div class="hud-bar-wrap"><div class="hud-bar" id="bar-inq" style="background:#E84040;width:0%"></div></div>
+    <span id="val-inq">0</span>%
   </div>
   <div class="hud-stat">😊
-    <div class="hud-bar-wrap"><div class="hud-bar" id="bar-hap" style="background:#F5C842;width:32%"></div></div>
-    <span id="val-hap">32</span>
+    <div class="hud-bar-wrap"><div class="hud-bar" id="bar-hap" style="background:#F5C842;width:0%"></div></div>
+    <span id="val-hap">0</span>%
   </div>
+  <div class="hud-stat">🚌
+    <div class="hud-bar-wrap"><div class="hud-bar" id="bar-mob" style="background:#4ABAFF;width:0%"></div></div>
+    <span id="val-mob">0</span>%
+  </div>
+  <span class="hud-task-indicator" id="hud-task-step">Fase 1/4</span>
   <button class="hud-btn" onclick="showIntro()">📋 Guida</button>
-  <button class="hud-btn" onclick="exitZone()">🗺️ Mappa</button>
 </div>
+
+<!-- ═══ TASK PROGRESS ═══ -->
+<div id="task-progress-bar"><div id="task-progress-fill"></div></div>
+
+<!-- ═══ SEQUENCE INDICATOR ═══ -->
+<div id="sequence-indicator">Prossimo: MUDTOWN</div>
 
 <!-- ═══ CITY MAP ═══ -->
 <div id="city-wrap"
@@ -275,108 +244,41 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
   onwheel="doZoom(event)">
 <div id="city-canvas">
 <div id="map-container">
-  <!-- SINGLE MAP IMAGE -->
-  <img id="map-img" src="assets/mappa.png" alt="Khaos City Map" draggable="false"/>
+  <img id="map-img" src="assets/nnnn.png" alt="Khaos City Map" draggable="false"/>
 
-  <!-- ══════ DISTRICT CLICKABLE ZONES ══════ -->
-  <!-- Mudtown: top-left (approx 0–47% x, 0–49% y) -->
+  <!-- DISTRICT CLICKABLE ZONES -->
   <div class="zone-overlay" id="zone-mudtown"
-       style="left:2%;top:2%;width:44%;height:46%"
-       onclick="enterZone('mudtown')"></div>
-  <!-- Iron District: top-right (approx 48–100% x, 0–49% y) -->
-  <div class="zone-overlay" id="zone-iron"
-       style="left:48%;top:2%;width:50%;height:46%"
-       onclick="enterZone('iron')"></div>
-  <!-- Solaris: bottom-left (approx 0–47% x, 50–100% y) -->
+       style="left:1%;top:1%;width:47%;height:48%"
+       onclick="tryEnterZone('mudtown')"></div>
+  <div class="zone-overlay" id="zone-industry"
+       style="left:49%;top:1%;width:50%;height:48%"
+       onclick="tryEnterZone('industry')"></div>
   <div class="zone-overlay" id="zone-solaris"
-       style="left:2%;top:50%;width:44%;height:48%"
-       onclick="enterZone('solaris')"></div>
-  <!-- Neon District: bottom-right (approx 48–100% x, 50–100% y) -->
+       style="left:1%;top:50%;width:47%;height:49%"
+       onclick="tryEnterZone('solaris')"></div>
   <div class="zone-overlay" id="zone-neon"
-       style="left:48%;top:50%;width:50%;height:48%"
-       onclick="enterZone('neon')"></div>
+       style="left:49%;top:50%;width:50%;height:49%"
+       onclick="tryEnterZone('neon')"></div>
 
-  <!-- ══════ DISTRICT LABELS ══════ -->
+  <!-- DISTRICT LABELS -->
   <div class="zone-label" style="left:16%;top:4%">🏚️ MUDTOWN</div>
-  <div class="zone-label" style="left:60%;top:4%">🏭 IRON DISTRICT</div>
+  <div class="zone-label" style="left:58%;top:4%">🏗️ INDUSTRY</div>
   <div class="zone-label" style="left:10%;top:52%">✨ SOLARIS</div>
   <div class="zone-label" style="left:58%;top:52%">🌃 NEON DISTRICT</div>
 
-  <!-- ══════ TASK BADGE DOTS ══════ -->
-  <div class="task-badge-dot" id="badge-mudtown" style="left:43%;top:5%">!</div>
-  <div class="task-badge-dot" id="badge-iron"    style="left:95%;top:5%">!</div>
-  <div class="task-badge-dot" id="badge-solaris" style="left:43%;top:52%">!</div>
-  <div class="task-badge-dot" id="badge-neon"    style="left:95%;top:52%">!</div>
+  <!-- TASK BADGE DOTS -->
+  <div class="task-badge-dot" id="badge-mudtown"  style="left:43%;top:5%"  onclick="tryEnterZone('mudtown')">T</div>
+  <div class="task-badge-dot" id="badge-industry" style="left:95%;top:5%"  onclick="tryEnterZone('industry')" >T</div>
+  <div class="task-badge-dot" id="badge-solaris"  style="left:43%;top:52%" onclick="tryEnterZone('solaris')" >T</div>
+  <div class="task-badge-dot" id="badge-neon"     style="left:95%;top:52%" onclick="tryEnterZone('neon')"    >T</div>
 
-  <!-- ══════ MAP MODIFICATION OVERLAYS ══════
-       These are shown when a task is completed, positioned within the relevant zone.
-       Each zone's modifications use % coordinates RELATIVE to the full 1400×900 map.
-  ══════ -->
-
-  <!-- MUDTOWN modifications -->
-  <!-- Bike lane: a green stripe across the top-left residential area -->
-  <div id="mod-mud-bike" class="mod-label hidden good-mod" style="left:6%;top:22%">🚲 Pista Ciclabile</div>
-  <div id="mod-mud-bike-line" class="map-mod hidden" style="left:3%;top:26%;width:40%;height:2%;background:linear-gradient(90deg,rgba(29,185,122,0.85),rgba(29,185,122,0.6));border-radius:4px;border:1px solid rgba(29,185,122,1)"></div>
-
-  <!-- Bus stops: icons at key road intersections in mudtown -->
-  <div id="mod-mud-bus-a" class="mod-label hidden good-mod" style="left:8%;top:34%">🚌 Fermata Bus</div>
-  <div id="mod-mud-bus-b" class="mod-label hidden good-mod" style="left:28%;top:34%">🚌 Fermata Bus</div>
-
-  <!-- Bad: parking lot (grey blot in mudtown, bottom area) -->
-  <div id="mod-mud-parking" class="mod-label hidden bad-mod" style="left:6%;top:40%">🅿️ Parcheggio</div>
-  <div id="mod-mud-parking-box" class="map-mod hidden" style="left:3%;top:33%;width:19%;height:12%;background:rgba(120,120,130,0.7);border-radius:6px;border:2px solid #E84040"></div>
-
-  <!-- IRON DISTRICT modifications -->
-  <!-- Electric trucks: above factory -->
-  <div id="mod-iro-elec" class="mod-label hidden good-mod" style="left:52%;top:22%">⚡ Veicoli Elettrici</div>
-  <div id="mod-iro-elec-icon" class="map-mod hidden" style="left:55%;top:16%;font-size:28px;display:flex;gap:4px">
-    <span style="animation:bob 1.8s ease-in-out infinite">🚛</span>
-    <span style="animation:bob 1.8s ease-in-out .3s infinite">⚡</span>
-  </div>
-
-  <!-- Tram track: horizontal line through iron district -->
-  <div id="mod-iro-tram" class="mod-label hidden good-mod" style="left:52%;top:40%">🚋 Linea Tram</div>
-  <div id="mod-iro-tram-line" class="map-mod hidden" style="left:49%;top:43%;width:49%;height:3%;background:linear-gradient(90deg,rgba(255,200,0,0.9),rgba(255,160,0,0.8));border-radius:4px;border-top:2px solid #888;border-bottom:2px solid #888"></div>
-
-  <!-- Bad: coal plant chimney -->
-  <div id="mod-iro-coal" class="mod-label hidden bad-mod" style="left:85%;top:18%">💨 Centrale Carbone</div>
-  <div id="mod-iro-coal-smoke" class="map-mod hidden" style="left:88%;top:6%;font-size:24px;animation:bob 1.5s ease-in-out infinite">🏭</div>
-
-  <!-- SOLARIS modifications -->
-  <!-- Bike sharing stations -->
-  <div id="mod-sol-bike" class="mod-label hidden good-mod" style="left:30%;top:58%">🛴 Bike Sharing</div>
-  <div id="mod-sol-bike-icon" class="map-mod hidden" style="left:33%;top:64%;font-size:24px;display:flex;gap:6px">
-    <span>🚲</span><span>🛴</span><span>🚲</span>
-  </div>
-
-  <!-- Zone 30: green tint + trees along solaris roads -->
-  <div id="mod-sol-zone30" class="mod-label hidden good-mod" style="left:20%;top:74%">🌳 Zona 30</div>
-  <div id="mod-sol-zone30-overlay" class="map-mod hidden" style="left:5%;top:70%;width:40%;height:8%;background:rgba(29,185,122,0.25);border:2px dashed rgba(29,185,122,0.7);border-radius:6px"></div>
-
-  <!-- Bad: highway widening (orange stripe) -->
-  <div id="mod-sol-highway" class="mod-label hidden bad-mod" style="left:8%;top:56%">🛣️ Autostrada Urbana</div>
-  <div id="mod-sol-highway-line" class="map-mod hidden" style="left:2%;top:54%;width:44%;height:3%;background:linear-gradient(90deg,rgba(255,100,0,0.8),rgba(255,60,0,0.7));border-radius:3px;border:1px solid #E84040"></div>
-
-  <!-- NEON DISTRICT modifications -->
-  <!-- Night bus: glowing stop sign -->
-  <div id="mod-neo-nightbus" class="mod-label hidden good-mod" style="left:52%;top:60%">🌙 Bus Notturno</div>
-  <div id="mod-neo-nightbus-icon" class="map-mod hidden" style="left:54%;top:65%;background:rgba(20,40,100,0.85);border:2px solid #4080FF;border-radius:8px;padding:4px 10px;font-family:'Fredoka One',cursive;font-size:12px;color:#80B0FF;white-space:nowrap">🌙 NOTTE</div>
-
-  <!-- Hub: building in bottom-right of neon -->
-  <div id="mod-neo-hub" class="mod-label hidden good-mod" style="left:83%;top:72%">🔋 Hub Mobilità</div>
-  <div id="mod-neo-hub-box" class="map-mod hidden" style="left:84%;top:76%;width:12%;height:10%;background:rgba(20,40,20,0.85);border:2px solid #3ABA6A;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Fredoka One',cursive;font-size:10px;color:#60E890;text-align:center">HUB<br>MOB.</div>
-
-  <!-- PLAYER DOT -->
-  <div id="player-dot" style="left:47%;top:47%"></div>
-
-  <!-- VEHICLES -->
-  <div id="tram-v" class="vehicle-dot" style="left:8%;top:45.5%">🚋</div>
-  <div id="bus-v"  class="vehicle-dot" style="left:70%;top:45.5%">🚌</div>
+  <!-- PLAYER SPRITE -->
+  <div id="player-sprite" style="left:47%;top:47%"></div>
 </div>
 </div>
 </div>
 
-<!-- ═══ ZONE PANEL BACK BUTTON (shown when zoomed into zone) ═══ -->
+<!-- ═══ ZONE PANEL ═══ -->
 <div id="zone-panel">
   <button id="zone-back" onclick="exitZone()">← Torna alla Mappa</button>
   <div id="zone-name-badge"></div>
@@ -386,94 +288,62 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
 <div id="stats-bar">
   <div class="stat-card">
     <div class="stat-icon">💰</div>
-    <div class="stat-value" id="sv-budget">180K</div>
+    <div class="stat-value" id="sv-budget">250K</div>
     <div class="stat-name">Budget</div>
-    <div class="stat-progress"><div class="stat-fill" id="sf-budget" style="background:#F5C842;width:36%"></div></div>
+    <div class="stat-progress"><div class="stat-fill" id="sf-budget" style="background:#F5C842;width:100%"></div></div>
   </div>
   <div class="s-divider"></div>
   <div class="stat-card">
-    <div class="stat-icon">🚌</div>
-    <div class="stat-value" id="sv-mob">28</div>
-    <div class="stat-name">Mobilità</div>
-    <div class="stat-progress"><div class="stat-fill" id="sf-mob" style="background:#4ABAFF;width:28%"></div></div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-icon">🌿</div>
-    <div class="stat-value" id="sv-env">22</div>
-    <div class="stat-name">Ambiente</div>
-    <div class="stat-progress"><div class="stat-fill" id="sf-env" style="background:#3DBE6A;width:22%"></div></div>
+    <div class="stat-icon">🏭</div>
+    <div class="stat-value" id="sv-inq">0%</div>
+    <div class="stat-name">Inquinamento</div>
+    <div class="stat-progress"><div class="stat-fill" id="sf-inq" style="background:#E84040;width:0%"></div></div>
   </div>
   <div class="stat-card">
     <div class="stat-icon">😊</div>
-    <div class="stat-value" id="sv-hap">32</div>
+    <div class="stat-value" id="sv-hap">0%</div>
     <div class="stat-name">Felicità</div>
-    <div class="stat-progress"><div class="stat-fill" id="sf-hap" style="background:#F5C842;width:32%"></div></div>
+    <div class="stat-progress"><div class="stat-fill" id="sf-hap" style="background:#F5C842;width:0%"></div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">🚌</div>
+    <div class="stat-value" id="sv-mob">0%</div>
+    <div class="stat-name">Mobilità</div>
+    <div class="stat-progress"><div class="stat-fill" id="sf-mob" style="background:#4ABAFF;width:0%"></div></div>
   </div>
   <div class="s-divider"></div>
-  <div class="stat-card">
-    <div class="stat-icon">📅</div>
-    <div class="stat-value" id="sv-year">2025</div>
-    <div class="stat-name">Anno</div>
-    <div class="stat-progress"><div class="stat-fill" id="sf-year" style="background:#E84040;width:0%"></div></div>
-  </div>
   <div class="stat-card">
     <div class="stat-icon">✅</div>
-    <div class="stat-value" id="sv-tasks">0/12</div>
-    <div class="stat-name">Interventi</div>
+    <div class="stat-value" id="sv-tasks">0/4</div>
+    <div class="stat-name">Decisioni</div>
     <div class="stat-progress"><div class="stat-fill" id="sf-tasks" style="background:#4ABAFF;width:0%"></div></div>
-  </div>
-  <div class="s-divider"></div>
-  <div class="stat-card">
-    <div class="stat-icon">🏆</div>
-    <div class="stat-value" id="sv-score">0</div>
-    <div class="stat-name">Punteggio</div>
-    <div class="stat-progress"><div class="stat-fill" id="sf-score" style="background:var(--gold);width:0%"></div></div>
   </div>
 </div>
 
-<!-- ═══ DISTRICT PANEL ═══ -->
-<div id="dp" class="panel">
+<!-- ═══ TASK PANEL (T key) ═══ -->
+<div id="task-overlay-bg" onclick="closeTaskPanel()"></div>
+<div id="transition-overlay"></div>
+<audio id="bg-audio" src="assets/bg.mp3" preload="auto" loop></audio>
+<audio id="tada-audio" src="assets/tada.mp3" preload="auto"></audio>
+<div id="task-panel" class="panel">
   <div class="panel-hdr">
-    <span id="dp-icon" style="font-size:26px"></span>
-    <span class="panel-title" id="dp-title"></span>
-    <button class="panel-x" onclick="closeDistrict()">✕</button>
+    <span id="tp-icon" style="font-size:26px"></span>
+    <span class="panel-title" id="tp-title">Proposte</span>
+    <button class="panel-x" onclick="closeTaskPanel()">✕</button>
   </div>
-  <div class="panel-body">
-    <div class="dp-badge" id="dp-badge"></div>
-    <p class="dp-desc" id="dp-desc"></p>
-    <div class="tasks-hdr">📋 PROPOSTE DI INTERVENTO <span style="color:#999;font-weight:400">(scegli con cura)</span></div>
-    <div id="dp-tasks"></div>
-  </div>
+  <div class="panel-body" id="tp-body"></div>
 </div>
 
 <!-- ═══ CONFIRM DIALOG ═══ -->
 <div id="confirm-overlay">
   <div id="confirm-box">
-    <div class="confirm-emoji" id="cf-emoji"></div>
-    <div class="confirm-title" id="cf-title"></div>
+    <div class="confirm-emoji" id="cf-emoji">📋</div>
+    <div class="confirm-title" id="cf-title">Confermi la scelta?</div>
     <div class="confirm-body" id="cf-body"></div>
     <div class="confirm-btns">
-      <button class="cb-yes" id="cb-yes" onclick="confirmTask()"></button>
+      <button class="cb-yes" id="cb-yes" onclick="confirmChoice()">✅ Conferma</button>
       <button class="cb-no" onclick="cancelConfirm()">Annulla</button>
     </div>
-  </div>
-</div>
-
-<!-- ═══ NPC ═══ -->
-<div id="npc" class="panel">
-  <div class="panel-hdr">
-    <span class="panel-title">💬 Abitante</span>
-    <button class="panel-x" onclick="closeNPC()">✕</button>
-  </div>
-  <div class="panel-body">
-    <div class="npc-row">
-      <div class="npc-face" id="npc-face">🧑</div>
-      <div>
-        <div class="npc-name" id="npc-name"></div>
-        <div class="npc-bubble" id="npc-text"></div>
-      </div>
-    </div>
-    <button class="npc-ok" onclick="closeNPC()">Capito, ci penso 👍</button>
   </div>
 </div>
 
@@ -484,206 +354,197 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
 <div id="end-screen">
   <div class="end-box">
     <div class="end-emoji" id="end-emoji">🏆</div>
-    <div class="end-title" id="end-title">Khaos City 2030!</div>
+    <div class="end-title" id="end-title">Fine mandato!</div>
     <div class="end-sub" id="end-sub"></div>
-    <div class="end-score" id="end-score"></div>
+    <div class="end-stats-grid" id="end-stats-grid"></div>
     <button class="end-again" onclick="location.reload()">🔄 Ricomincia</button>
   </div>
 </div>
 
 <!-- ═══ PROXIMITY HINT ═══ -->
-<div id="proximity-hint">Premi <strong>T</strong> per vedere le proposte</div>
-
-<!-- ═══ TASK OVERLAY BACKGROUND ═══ -->
-<div id="task-overlay-bg" onclick="closeTaskPanel()"></div>
-
-<!-- ═══ TASK PANEL (T key) ═══ -->
-<div id="task-panel" class="panel">
-  <div class="panel-hdr">
-    <span id="tp-icon" style="font-size:26px"></span>
-    <span class="panel-title" id="tp-title">Proposte</span>
-    <button class="panel-x" onclick="closeTaskPanel()">✕</button>
-  </div>
-  <div class="panel-body" id="tp-tasks"></div>
-</div>
+<div id="proximity-hint">Premi <strong>[T]</strong> per le proposte</div>
 
 <script>
 // ═══════════════════════════════════════════════════════════════
 // GAME STATE
 // ═══════════════════════════════════════════════════════════════
+const TASK_COST = 50000;
+
 const G = {
-  budget: 180000,
-  year: 2025,
-  stats: { mob: 28, env: 22, hap: 32 },
-  score: 0,
+  budget: 250000,
+  stats: { inq: 0, hap: 0, mob: 0 },
   tasksDone: 0,
-  badTasksDone: 0,
+  // Tracks which option was chosen per zone: 'B' or 'C'
+  choices: { mudtown: null, industry: null, solaris: null, neon: null },
+  currentMap: 'nnnn.png',
 };
-const TOTAL_TASKS = 12;
-const MAX_BUDGET = 500000;
 
-// ─── PLAYER (% of 1400×900 map) ───
-const PLAYER = {
-  x: 47, y: 47, // percent
-  speed: 0.18,
-};
-const DISTRICT_ZONES_PCT = [
-  {id:'mudtown', cx:24, cy:25, r:22},
-  {id:'iron',    cx:73, cy:25, r:22},
-  {id:'solaris', cx:24, cy:74, r:22},
-  {id:'neon',    cx:73, cy:74, r:22},
-];
-let nearDistrict = null;
-let taskPanelOpen = false;
+const MAP_FOLDER = 'assets/';
+const TASK_ORDER = ['mudtown','industry','solaris','neon'];
+const MAX_BUDGET = 250000;
 
-// ═══════════════════════════════════════════════════════════════
-// TASK / DISTRICT DATA — with mapFx referencing DOM element IDs
-// ═══════════════════════════════════════════════════════════════
+// ─── DISTRICT DATA ───
 const DISTRICTS = {
   mudtown: {
-    name:'Mudtown', icon:'🏚️',
-    color:'#7A5020', bg:'#C4A070',
-    badge:'🏚️ ZONA POVERA',
-    desc:'Il quartiere più degradato. Strade dissestate, nessun mezzo pubblico. Il bilancio è stretto — scegli gli interventi giusti.',
-    // Zone viewport: which % of the map to zoom into (left, top, right, bottom)
-    zoneView:{left:2, top:2, right:46, bottom:49},
-    npc:{face:'👴', name:'Nonno Luigi', lines:[
-      'Sindaco, qui non passa un autobus! Mia nipote fa 4km a piedi ogni giorno. La pista ciclabile almeno!',
-      'Occhio a quello con la valigetta che ti propone il parcheggio — lo vogliono solo i palazzinari!',
-      'Se metti le bici elettriche qui, finalmente posso andare al mercato senza il bus.',
-    ]},
-    tasks:[
-      { id:'mud_bike', good:true,
-        name:'🚲 Pista Ciclabile Sicura', 
-        desc:'Costruisci 2km di pista ciclabile protetta in via Fango. Asfalto nuovo, segnaletica e illuminazione.',
-        cost:42000, years:1,
-        rewards:{mob:10,env:7,hap:8}, score:600,
-        mapFx: ()=>{ showMod('mod-mud-bike','mod-mud-bike-line'); }
-      },
-      { id:'mud_bus',  good:true,
-        name:'🚌 Rete Bus Quartiere',
-        desc:'Installa 4 nuove fermate con pensiline digitali e porta la frequenza del bus a 10 minuti.',
-        cost:55000, years:1,
-        rewards:{mob:12,env:4,hap:10}, score:700,
-        mapFx: ()=>{ showMod('mod-mud-bus-a','mod-mud-bus-b'); }
-      },
-      { id:'mud_park', good:false,
-        name:'🅿️ Grande Parcheggio Pubblico',
-        desc:'Proposta del consorzio edilizio: costruire un parcheggio multipiano. "Risolve il traffico!" — ma aumenta le auto e distrugge lo spazio pubblico.',
-        cost:95000, years:1,
-        rewards:{mob:-8,env:-10,hap:-5}, score:-500,
-        mapFx: ()=>{ showMod('mod-mud-parking','mod-mud-parking-box'); }
-      },
-    ]
+    name: 'Mudtown', icon: '🏚️',
+    zoneView: {left:2, top:2, right:46, bottom:49},
+    npcName: 'Yung Gianmarko',
+    npcFace: '🎤',
+    complaint: 'Bro, la situazione qui fa schifo! La mia casa cade a pezzi e il quartiere è un disastro totale. Qualcuno deve fare qualcosa!',
+    question: 'Che cosa vorresti fare?',
+    optionB: {
+      label: '🔨 Ricostruisci il quartiere',
+      desc: 'Ristruttura le abitazioni e riqualifica le strade di Mudtown.',
+    },
+    optionC: {
+      label: '🏬 Radi tutto e costruisci un centro commerciale',
+      desc: 'Demolisci il quartiere e sostituiscilo con un grande centro commerciale.',
+    },
   },
-  iron:{
-    name:'Iron District', icon:'🏭',
-    color:'#2A3848', bg:'#8090A0',
-    badge:'⚙️ ZONA INDUSTRIALE',
-    desc:'Fabbriche e traffico pesante. I lavoratori chiedono alternative. Ogni euro conta — non sprecarli su soluzioni false.',
-    zoneView:{left:48, top:2, right:98, bottom:49},
-    npc:{face:'👷', name:'Operaia Sara', lines:[
-      'Ogni mattina in auto perché non c\'è alternativa! Con un tram o bus frequente, lascerei la macchina a casa.',
-      'Quel piano per la "superstrada urbana" — sembra comodo ma distruggerebbe il quartiere!',
-      'Se convertono i camion in elettrico, l\'aria qui diventa finalmente respirabile.',
-    ]},
-    tasks:[
-      { id:'iro_elec', good:true,
-        name:'⚡ Flotta Veicoli Elettrici',
-        desc:'Converti 25 veicoli industriali pesanti in versioni elettriche. Contributo del 40% dalla Regione.',
-        cost:85000, years:2,
-        rewards:{mob:5,env:18,hap:8}, score:800,
-        mapFx: ()=>{ showMod('mod-iro-elec','mod-iro-elec-icon'); }
-      },
-      { id:'iro_tram', good:true,
-        name:'🚋 Linea Tram Express',
-        desc:'Collega Iron District al centro città con un tram diretto ogni 8 minuti. Riduce il traffico del 30%.',
-        cost:110000, years:2,
-        rewards:{mob:16,env:9,hap:11}, score:900,
-        mapFx: ()=>{ showMod('mod-iro-tram','mod-iro-tram-line'); }
-      },
-      { id:'iro_coal', good:false,
-        name:'🏭 Centrale a Carbone "Low-Cost"',
-        desc:'Proposta di un gruppo industriale: nuova centrale a carbone per abbattere le bollette. Economica ora, devastante dopo.',
-        cost:60000, years:1,
-        rewards:{mob:0,env:-22,hap:-12}, score:-800,
-        mapFx: ()=>{ showMod('mod-iro-coal','mod-iro-coal-smoke'); }
-      },
-    ]
+  industry: {
+    name: 'Industry', icon: '🏗️',
+    zoneView: {left:48, top:2, right:98, bottom:49},
+    npcName: 'Giovanni Peccati',
+    npcFace: '🔧',
+    complaint: 'Devo stare 30 ore nel traffico ogni giorno per colpa di quel dannato Luna Park! Non ne posso più!',
+    question: 'Che cosa vorresti fare?',
+    optionB: {
+      label: '🔨 Ricostruisci il quartiere (TOGLI LUNA PARK E STADIO)',
+      desc: 'Ricostruisci la zona tirando giù Luna Park e lo stadio per ridurre il traffico.',
+    },
+    optionC: {
+      label: '🛣️ Togli la fontana, allarga le 4 corsie aumentando l\'affluenza di camion',
+      desc: 'Allarga le corsie e rimuovi la fontana: più traffico merci, più inquinamento.',
+    },
   },
-  solaris:{
-    name:'Solaris', icon:'✨',
-    color:'#7A5500', bg:'#F0D870',
-    badge:'🌞 ZONA FUTURISTICA',
-    desc:'Il quartiere modello. Vuole il titolo di quartiere più sostenibile. Ma occhio alle proposte di greenwashing.',
-    zoneView:{left:2, top:50, right:46, bottom:98},
-    npc:{face:'👩‍💻', name:'Arch. Elena', lines:[
-      'Abbiamo i pannelli solari, ma serve il bike sharing! I ragazzi non hanno alternative alla macchina.',
-      'Quella "zona verde" con i pini plastici è uno scherzo — i cittadini la attraversano a 80km/h!',
-      'Zona 30 con veri alberi significa aria più pulita e bambini in bicicletta. Fatela per bene.',
-    ]},
-    tasks:[
-      { id:'sol_bike', good:true,
-        name:'🛴 Bike & Scooter Sharing',
-        desc:'200 bici e 80 scooter elettrici condivisi, 15 stazioni. Integrato con l\'app del comune.',
-        cost:58000, years:1,
-        rewards:{mob:13,env:10,hap:12}, score:750,
-        mapFx: ()=>{ showMod('mod-sol-bike','mod-sol-bike-icon'); }
-      },
-      { id:'sol_zone30', good:true,
-        name:'🌳 Zona 30 + Alberature',
-        desc:'Trasforma 4 strade in zone 30 km/h con nuovi alberi, aiuole e percorsi pedonali.',
-        cost:36000, years:1,
-        rewards:{mob:7,env:13,hap:13}, score:650,
-        mapFx: ()=>{ showMod('mod-sol-zone30','mod-sol-zone30-overlay'); }
-      },
-      { id:'sol_highway', good:false,
-        name:'🛣️ Allargamento Via Principale',
-        desc:'Proposta della lobby costruttori: allargare la strada principale a 4 corsie. "Riduce la coda!" — induce più traffico privato e taglia i marciapiedi.',
-        cost:75000, years:1,
-        rewards:{mob:-5,env:-14,hap:-8}, score:-600,
-        mapFx: ()=>{ showMod('mod-sol-highway','mod-sol-highway-line'); }
-      },
-    ]
+  solaris: {
+    name: 'Solaris', icon: '✨',
+    zoneView: {left:2, top:50, right:46, bottom:98},
+    npcName: 'Al-Essandrini',
+    npcFace: '🧑‍💼',
+    complaint: 'Gli abitanti protestano per la qualità dell\'aria. Io ho una proposta vantaggiosa per tutti... o almeno per me.',
+    question: 'Che cosa vorresti fare?',
+    optionB: {
+      label: '🚲 Costruisci piste ciclabili',
+      desc: 'Realizza una rete di piste ciclabili per migliorare la qualità dell\'aria e la mobilità.',
+    },
+    optionC: {
+      label: '🅿️ Accetta l\'offerta di Al-Essandrini: mega parcheggio sotterraneo privato',
+      desc: 'Costruisci un parcheggio sotterraneo privato. Al-Essandrini pagherà 300.000 € al comune.',
+    },
   },
-  neon:{
-    name:'Neon District', icon:'🌃',
-    color:'#600030', bg:'#E090C8',
-    badge:'🌈 ANNI 80 DECADENTE',
-    desc:'Vita notturna, traffico fino all\'alba, pochi mezzi pubblici. Serve una rivoluzione della mobilità notturna.',
-    zoneView:{left:48, top:50, right:98, bottom:98},
-    npc:{face:'🎸', name:'DJ Alex', lines:[
-      'Di notte non c\'è un bus! I clienti vengono tutti in auto. Basterebbero due linee notturne!',
-      'Il "parcheggio abusivo gratuito" che propongono quelli della lobby? Peggiora tutto, fidati.',
-      'Hub mobilità con taxi-sharing e bike? Quello sì che cambierebbe la notte qui.',
-    ]},
-    tasks:[
-      { id:'neo_nightbus', good:true,
-        name:'🌙 Bus Notturno H24',
-        desc:'Attiva 2 linee di bus notturno ogni 20 min dalle 23:00 alle 5:00. Sicurezza e sostenibilità.',
-        cost:52000, years:1,
-        rewards:{mob:11,env:5,hap:15}, score:700,
-        mapFx: ()=>{ showMod('mod-neo-nightbus','mod-neo-nightbus-icon'); }
-      },
-      { id:'neo_hub', good:true,
-        name:'🔋 Hub Mobilità Integrata',
-        desc:'Centro con parcheggio bici sicuro, ricarica veicoli elettrici, punto taxi-sharing e info trasporti.',
-        cost:78000, years:2,
-        rewards:{mob:13,env:8,hap:9}, score:800,
-        mapFx: ()=>{ showMod('mod-neo-hub','mod-neo-hub-box'); }
-      },
-      { id:'neo_parking', good:false,
-        name:'🅿️ Parcheggio Gratuito Notturno Abusivo',
-        desc:'Proposta di commercianti: trasformare la piazza in parcheggio gratuito notturno. Devasta la piazza e aumenta il traffico privato.',
-        cost:30000, years:1,
-        rewards:{mob:-6,env:-8,hap:-7}, score:-400,
-        mapFx: ()=>{}
-      },
-    ]
-  }
+  neon: {
+    name: 'Neon District', icon: '🌃',
+    zoneView: {left:48, top:50, right:98, bottom:98},
+    npcName: 'Ispettore Urbano',
+    npcFace: '🔦',
+    complaint: 'Il Neon District è diventato un labirinto buio e pericoloso di notte. Qualcosa deve cambiare!',
+    question: 'Che cosa vorresti fare?',
+    optionB: {
+      label: '🚶 Riqualificazione Urbana: zona pedonale con tram elettrico',
+      desc: 'Trasforma il Neon District in una zona pedonale con tram elettrico pulito.',
+    },
+    optionC: {
+      label: '🚅 Espansione Industriale: doppia linea tram ad alta velocità',
+      desc: 'Costruisci una doppia linea tram ad alta velocità per il traffico pesante.',
+    },
+  },
 };
 
-function showMod(...ids){ ids.forEach(id=>{ const el=document.getElementById(id); if(el){el.classList.remove('hidden');el.classList.add('visible');} }); }
+// ─── MAP LOGIC ───
+// Map transitions follow il prompt.
+// Ci sono 16 percorsi di scelta finali e 31 stati possibili totali,
+// ma soltanto 27 nomi mappa unici, perché alcune uscite finali coincidono.
+const MAP_TRANSITIONS = {
+  mudtown: {
+    B: 'bnnn.png',
+    C: 'cnnn.png',
+  },
+  industry: {
+    B: {
+      'bnnn.png': 'bbnn.png',
+      'cnnn.png': 'cbnn.png',
+    },
+    C: {
+      'bnnn.png': 'bcnn.png',
+      'cnnn.png': 'ccnn.png',
+    },
+  },
+  solaris: {
+    B: {
+      'bbnn.png': 'bbbn.png',
+      'cbnn.png': 'cbbn.png',
+      'bcnn.png': 'bcbn.png',
+      'ccnn.png': 'ccbn.png',
+    },
+    C: {
+      'bbnn.png': 'bbcn.png',
+      'cbnn.png': 'cbcn.png',
+      'bcnn.png': 'bccn.png',
+      'ccnn.png': 'cccn.png',
+    },
+  },
+  neon: {
+    B: {
+      'bbbn.png': 'bbbb.png',
+      'bbcn.png': 'bbbc.png',
+      'cbbn.png': 'cbbb.png',
+      'cbcn.png': 'cbbc.png',
+      'bcbn.png': 'bcbb.png',
+      'bccn.png': 'bcbc.png',
+      'ccbn.png': 'ccbb.png',
+      'cccn.png': 'ccbc.png',
+    },
+    C: {
+      'bbbn.png': 'bbbc.png',
+      'bbcn.png': 'bbcc.png',
+      'cbbn.png': 'cbbc.png',
+      'cbcn.png': 'cbcc.png',
+      'bcbn.png': 'bcbc.png',
+      'bccn.png': 'bccc.png',
+      'ccbn.png': 'ccbc.png',
+      'cccn.png': 'cccc.png',
+    },
+  },
+};
+
+function getNextMap(zoneId, option){
+  const transitions = MAP_TRANSITIONS[zoneId];
+  if(!transitions) return G.currentMap;
+  if(zoneId === 'mudtown') return transitions[option] || G.currentMap;
+  return transitions[option]?.[G.currentMap] || G.currentMap;
+}
+
+function switchMap(newMap){
+  if(newMap === G.currentMap) return;
+  const img = document.getElementById('map-img');
+  img.classList.add('fading');
+  setTimeout(()=>{
+    img.src = MAP_FOLDER + newMap;
+    G.currentMap = newMap;
+    img.classList.remove('fading');
+  }, 400);
+}
+
+// ─── STAT EFFECTS ───
+const STAT_EFFECTS = {
+  mudtown: {
+    B: { inq: 0,  hap: 25, mob: 25 },
+    C: { inq: 25, hap: 0,  mob: 0  },
+  },
+  industry: {
+    B: { inq: 0,  hap: 25, mob: 25 },
+    C: { inq: 25, hap: 0,  mob: 0  },
+  },
+  solaris: {
+    B: { inq: 0,  hap: 25,  mob: 25  },
+    C: { inq: 25, hap: -50, mob: 0, budgetBonus: 300000 },
+  },
+  neon: {
+    B: { inq: 0,  hap: 25, mob: 25 },
+    C: { inq: 25, hap: 0,  mob: 0  },
+  },
+};
 
 // ═══════════════════════════════════════════════════════════════
 // CAMERA
@@ -691,7 +552,7 @@ function showMod(...ids){ ids.forEach(id=>{ const el=document.getElementById(id)
 const MAP_W = 1400, MAP_H = 900;
 let cam = {x:0, y:0, scale:1};
 let drag = {on:false, sx:0, sy:0, cx:0, cy:0};
-let currentZone = null; // which zone is zoomed into
+let currentZone = null;
 
 function getWrap(){ return document.getElementById('city-wrap'); }
 
@@ -713,73 +574,50 @@ function applyCamera(noTransition){
   if(noTransition){ requestAnimationFrame(()=>canvas.classList.remove('no-transition')); }
 }
 
-// Zoom into a district zone using its zoneView % coords
 function enterZone(id){
   currentZone = id;
   const d = DISTRICTS[id];
   const zv = d.zoneView;
   const wrap = getWrap();
   const vw = wrap.clientWidth, vh = wrap.clientHeight;
-
-  // Convert % to px in map coords
   const zLeft  = (zv.left/100) * MAP_W;
   const zTop   = (zv.top/100)  * MAP_H;
   const zW     = ((zv.right - zv.left)/100) * MAP_W;
   const zH     = ((zv.bottom - zv.top)/100)  * MAP_H;
-
-  // Scale to fill viewport with small padding
   const padding = 40;
   const s = Math.min((vw - padding*2)/zW, (vh - padding*2)/zH);
-
-  // Center the zone in the viewport
   cam.scale = s;
   cam.x = (vw/2) - (zLeft + zW/2) * s;
   cam.y = (vh/2) - (zTop  + zH/2) * s;
-  applyCamera(false); // smooth transition
-
-  // Show zone UI panel
+  applyCamera(false);
   document.getElementById('zone-name-badge').textContent = d.icon + ' ' + d.name;
   document.getElementById('zone-panel').classList.add('visible');
-
-  // Highlight active zone
   document.querySelectorAll('.zone-overlay').forEach(z=>z.classList.remove('active'));
   const zEl = document.getElementById('zone-'+id);
   if(zEl) zEl.classList.add('active');
-
-  // Open district panel
-  selectDistrict(id);
 }
 
 function exitZone(){
   currentZone = null;
   document.getElementById('zone-panel').classList.remove('visible');
   document.querySelectorAll('.zone-overlay').forEach(z=>z.classList.remove('active'));
-  closeDistrict();
+  closeTaskPanel();
   centerCamera();
 }
 
 function startDrag(e){
-  if(e.target.closest('.panel')||e.target.closest('#zone-back')||e.target.closest('#zone-name-badge')) return;
+  if(e.target.closest('.panel')||e.target.closest('#zone-back')||e.target.closest('#zone-name-badge')||e.target.closest('#task-panel')||e.target.closest('#confirm-overlay')) return;
   drag.on=true; drag.sx=e.clientX; drag.sy=e.clientY; drag.cx=cam.x; drag.cy=cam.y;
   getWrap().classList.add('dragging');
 }
-function doDrag(e){
-  if(!drag.on)return;
-  cam.x=drag.cx+(e.clientX-drag.sx);
-  cam.y=drag.cy+(e.clientY-drag.sy);
-  applyCamera(true);
-}
-function endDrag(){
-  drag.on=false;
-  getWrap().classList.remove('dragging');
-}
+function doDrag(e){ if(!drag.on)return; cam.x=drag.cx+(e.clientX-drag.sx); cam.y=drag.cy+(e.clientY-drag.sy); applyCamera(true); }
+function endDrag(){ drag.on=false; getWrap().classList.remove('dragging'); }
 function doZoom(e){
   e.preventDefault();
   const delta = e.deltaY > 0 ? -0.04 : 0.04;
   const newScale = Math.max(0.3, Math.min(3.5, cam.scale+delta));
   const rect = getWrap().getBoundingClientRect();
-  const mx = e.clientX - rect.left;
-  const my = e.clientY - rect.top;
+  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
   cam.x = mx - (mx - cam.x)*(newScale/cam.scale);
   cam.y = my - (my - cam.y)*(newScale/cam.scale);
   cam.scale = newScale;
@@ -791,222 +629,217 @@ function doZoom(e){
 // ═══════════════════════════════════════════════════════════════
 function startGame(){
   document.getElementById('title-screen').classList.add('hidden');
+  startBackgroundMusic();
   setTimeout(()=>{ document.getElementById('intro-overlay').classList.remove('hidden'); }, 700);
   centerCamera();
 }
 function closeIntro(){
   document.getElementById('intro-overlay').classList.add('hidden');
-  showToast('🏙️ Benvenuto Sindaco! Clicca un quartiere per entrare.','info');
+  showToast('🏙️ Benvenuto Sindaco! Vai verso Mudtown e premi [T].','info');
 }
 function showIntro(){ document.getElementById('intro-overlay').classList.remove('hidden'); }
 
 // ═══════════════════════════════════════════════════════════════
-// DISTRICT PANEL
+// ZONE ENTRY WITH SEQUENCE CHECK
 // ═══════════════════════════════════════════════════════════════
-let currentDistrict = null;
+function getCurrentStep(){ return G.tasksDone; } // 0=mudtown, 1=industry, 2=solaris, 3=neon
 
-function selectDistrict(id){
-  currentDistrict = id;
-  const d = DISTRICTS[id];
-  document.getElementById('dp-icon').textContent = d.icon;
-  document.getElementById('dp-title').textContent = d.name;
-  const badge = document.getElementById('dp-badge');
-  badge.textContent = d.badge;
-  badge.style.background = d.color;
-  document.getElementById('dp-desc').textContent = d.desc;
-  renderTasks(id);
-  document.getElementById('dp').style.display = 'block';
-  setTimeout(()=>showNPC(id), 700);
-}
-function closeDistrict(){
-  document.getElementById('dp').style.display='none';
-  closeNPC();
-  currentDistrict=null;
+function tryEnterZone(id){
+  const stepIdx = TASK_ORDER.indexOf(id);
+  const current = getCurrentStep();
+  if(stepIdx > current){
+    const needed = DISTRICTS[TASK_ORDER[current]].name;
+    showToast(`⚠️ Prima completa ${needed}!`, 'warn');
+    return;
+  }
+  enterZone(id);
+  // Only open task panel if this is the current task
+  if(stepIdx === current && !G.choices[id]){
+    setTimeout(()=> openTaskPanel(id), 400);
+  } else if(G.choices[id]){
+    showToast(`✅ ${DISTRICTS[id].name} già completato!`, 'info');
+  }
 }
 
-function renderTasks(id){
+// ═══════════════════════════════════════════════════════════════
+// TASK PANEL
+// ═══════════════════════════════════════════════════════════════
+let taskPanelOpen = false;
+let pendingChoice = null; // {zoneId, option: 'B' or 'C'}
+
+function openTaskPanel(id){
   const d = DISTRICTS[id];
-  const container = document.getElementById('dp-tasks');
-  container.innerHTML = d.tasks.map(t=>{
-    const isDone = t.done;
-    const isGood = t.good;
-    const canAfford = G.budget >= t.cost;
-    const costClass = canAfford ? 'tag-cost' : 'tag-cost" style="background:#FDECEA;color:#900';
-    let btnHtml = '';
-    if(isDone){
-      btnHtml = `<div style="font-size:12px;font-weight:700;color:#888;margin-top:8px">${isGood?'✅ Intervento completato':'✅ Proposta già firmata'}</div>`;
-    } else {
+  document.getElementById('tp-icon').textContent = d.icon;
+  document.getElementById('tp-title').textContent = d.name;
+
+  const alreadyDone = !!G.choices[id];
+  const canAfford = G.budget >= TASK_COST;
+
+  let html = '';
+  // NPC complaint
+  html += `<div class="npc-complaint">
+    <div class="npc-name-badge">${d.npcFace} ${d.npcName}</div>
+    "${d.complaint}"
+  </div>`;
+  html += `<div style="font-family:'Fredoka One',cursive;font-size:16px;color:#333;margin-bottom:12px">${d.question}</div>`;
+
+  if(alreadyDone){
+    const chosenOpt = G.choices[id] === 'B' ? d.optionB : d.optionC;
+    html += `<div class="choice-card done selected">
+      <div class="choice-title">✅ ${chosenOpt.label}</div>
+      <div class="choice-desc">${chosenOpt.desc}</div>
+    </div>
+    <div style="text-align:center;color:#888;font-size:12px;margin-top:8px">Decisione già presa.</div>`;
+  } else {
+    ['B','C'].forEach(opt=>{
+      const o = opt === 'B' ? d.optionB : d.optionC;
       const disabled = !canAfford ? 'disabled' : '';
-      const btnLabel = canAfford ? '📋 Esamina Proposta' : '❌ Budget insufficiente';
-      btnHtml = `<button class="task-btn good-btn" ${disabled} onclick="requestConfirm('${id}','${t.id}')">${btnLabel}</button>`;
-    }
-    return `
-    <div class="task-card ${isDone?(isGood?'done':'bad-done'):''}">
-      <div class="task-top"><div class="task-name">${t.name}</div></div>
-      <div class="task-desc">${t.desc}</div>
-      <div class="task-meta">
-        <span class="tag ${costClass}">💰 ${t.cost.toLocaleString('it')} €</span>
-        <span class="tag" style="background:#F0F0F0;color:#555">⏱️ ${t.years} anno${t.years>1?'i':''}</span>
-      </div>
-      ${btnHtml}
-    </div>`;
-  }).join('');
+      html += `<div class="choice-card" id="choice-card-${opt}">
+        <div class="choice-title">${o.label}</div>
+        <span class="choice-cost">💰 ${TASK_COST.toLocaleString('it')} €</span>
+        <div class="choice-desc">${o.desc}</div>
+        <button class="choice-btn" ${disabled} onclick="requestChoice('${id}','${opt}')">
+          ${canAfford ? '📋 Scegli questa opzione' : '❌ Budget insufficiente'}
+        </button>
+      </div>`;
+    });
+  }
+
+  document.getElementById('tp-body').innerHTML = html;
+  document.getElementById('task-panel').style.display = 'block';
+  document.getElementById('task-overlay-bg').style.display = 'block';
+  taskPanelOpen = true;
 }
 
-// ═══════════════════════════════════════════════════════════════
-// CONFIRM DIALOG
-// ═══════════════════════════════════════════════════════════════
-let pendingTask = null;
+function closeTaskPanel(){
+  document.getElementById('task-panel').style.display = 'none';
+  document.getElementById('task-overlay-bg').style.display = 'none';
+  taskPanelOpen = false;
+}
 
-function requestConfirm(distId, taskId){
-  const t = DISTRICTS[distId].tasks.find(x=>x.id===taskId);
-  if(!t||t.done) return;
-  pendingTask = {distId, taskId};
-  document.getElementById('cf-emoji').textContent = '📋';
-  document.getElementById('cf-title').textContent = 'Confermi la proposta?';
-  document.getElementById('cf-body').textContent = `Costo: ${t.cost.toLocaleString('it')} € — ${t.years} anno${t.years>1?'i':''}`;
-  const btn = document.getElementById('cb-yes');
-  btn.textContent = '✅ Conferma';
-  btn.className = 'cb-yes';
+function requestChoice(zoneId, option){
+  const d = DISTRICTS[zoneId];
+  const o = option === 'B' ? d.optionB : d.optionC;
+  pendingChoice = {zoneId, option};
+  document.getElementById('cf-emoji').textContent = option === 'B' ? '✅' : '⚠️';
+  document.getElementById('cf-title').textContent = 'Confermi la scelta?';
+  document.getElementById('cf-body').textContent = `${o.label}\n\nCosto: 50.000 €`;
   document.getElementById('confirm-overlay').classList.add('show');
 }
-function cancelConfirm(){ document.getElementById('confirm-overlay').classList.remove('show'); pendingTask=null; }
-function confirmTask(){
+
+function cancelConfirm(){
   document.getElementById('confirm-overlay').classList.remove('show');
-  if(!pendingTask) return;
-  const {distId, taskId} = pendingTask;
-  pendingTask = null;
-  executeTask(distId, taskId);
+  pendingChoice = null;
+}
+
+function confirmChoice(){
+  document.getElementById('confirm-overlay').classList.remove('show');
+  if(!pendingChoice) return;
+  const {zoneId, option} = pendingChoice;
+  pendingChoice = null;
+  executeChoice(zoneId, option);
 }
 
 // ═══════════════════════════════════════════════════════════════
-// EXECUTE TASK
+// EXECUTE CHOICE
 // ═══════════════════════════════════════════════════════════════
-function executeTask(distId, taskId){
-  const d = DISTRICTS[distId];
-  const t = d.tasks.find(x=>x.id===taskId);
-  if(!t||t.done||G.budget<t.cost) return;
+function executeChoice(zoneId, option){
+  if(G.budget < TASK_COST){ showToast('❌ Budget insufficiente!','warn'); return; }
+  if(G.choices[zoneId]){ showToast('⚠️ Già deciso!','warn'); return; }
 
-  t.done = true;
-  G.budget -= t.cost;
-  G.year += t.years;
-  G.stats.mob = Math.max(0,Math.min(100, G.stats.mob + t.rewards.mob));
-  G.stats.env = Math.max(0,Math.min(100, G.stats.env + t.rewards.env));
-  G.stats.hap = Math.max(0,Math.min(100, G.stats.hap + t.rewards.hap));
-  G.score += t.score;
+  G.choices[zoneId] = option;
+  G.budget -= TASK_COST;
   G.tasksDone++;
-  if(!t.good) G.badTasksDone++;
 
-  if(t.good){
-    const income = Math.round(t.cost * 0.18);
-    G.budget += income;
-    showToast(`✅ ${t.name} approvata! +${income.toLocaleString('it')}€ da indotto`, 'ok');
+  const fx = STAT_EFFECTS[zoneId][option];
+  G.stats.inq = Math.max(0, Math.min(100, G.stats.inq + (fx.inq||0)));
+  G.stats.hap = Math.max(0, Math.min(100, G.stats.hap + (fx.hap||0)));
+  G.stats.mob = Math.max(0, Math.min(100, G.stats.mob + (fx.mob||0)));
+  if(fx.budgetBonus){
+    G.budget += fx.budgetBonus;
+    showToast(`✅ Scelta effettuata! +${fx.budgetBonus.toLocaleString('it')} € da Al-Essandrini`, 'ok');
   } else {
-    showToast(`⚠️ ${t.name} firmata. Gli effetti si vedranno presto.`, 'warn');
+    showToast(`✅ ${DISTRICTS[zoneId].name} — decisione presa!`, 'ok');
   }
 
-  if(t.mapFx) t.mapFx();
+  // Mark badge as done
+  const badge = document.getElementById('badge-'+zoneId);
+  if(badge){ badge.textContent = '✓'; badge.classList.add('done'); }
 
-  // Remove badge if all tasks done
-  if(d.tasks.every(x=>x.done)){
-    const badge = document.getElementById('badge-'+distId);
-    if(badge) badge.style.display='none';
-    addStarToDistrict(distId);
-  }
-
-  if(G.budget < 30000){
-    document.getElementById('hud-budget-pill').classList.add('low');
-  }
-
+  const nextMap = getNextMap(zoneId, option);
   updateHUD();
-  if(currentDistrict===distId) renderTasks(distId);
-  checkEnd();
-}
+  closeTaskPanel();
+  triggerMapTransition(nextMap);
 
-function addStarToDistrict(id){
-  // Place a star label near the district label
-  const positions = {
-    mudtown: {left:'38%', top:'4%'},
-    iron:    {left:'90%', top:'4%'},
-    solaris: {left:'38%', top:'52%'},
-    neon:    {left:'90%', top:'52%'},
-  };
-  const pos = positions[id];
-  if(!pos) return;
-  const container = document.getElementById('map-container');
-  const star = document.createElement('div');
-  star.className = 'district-star';
-  star.textContent = '⭐';
-  star.style.left = pos.left;
-  star.style.top  = pos.top;
-  container.appendChild(star);
+  if(G.tasksDone >= 4){
+    setTimeout(showEnd, 1200);
+  }
 }
-
-// ═══════════════════════════════════════════════════════════════
-// NPC
-// ═══════════════════════════════════════════════════════════════
-function showNPC(id){
-  const npc = DISTRICTS[id].npc;
-  const line = npc.lines[Math.floor(Math.random()*npc.lines.length)];
-  document.getElementById('npc-face').textContent = npc.face;
-  document.getElementById('npc-name').textContent = npc.name;
-  document.getElementById('npc-text').textContent = line;
-  document.getElementById('npc').style.display = 'block';
-}
-function closeNPC(){ document.getElementById('npc').style.display='none'; }
 
 // ═══════════════════════════════════════════════════════════════
 // HUD
 // ═══════════════════════════════════════════════════════════════
 function updateHUD(){
+  const bK = G.budget >= 1000 ? Math.round(G.budget/1000)+'K' : G.budget;
   document.getElementById('hud-budget').textContent = G.budget.toLocaleString('it');
-  document.getElementById('hud-year').textContent   = 'ANNO '+G.year;
-  ['mob','env','hap'].forEach(k=>{
+  document.getElementById('sv-budget').textContent = bK;
+  if(G.budget < 50000){
+    document.getElementById('hud-budget-pill').classList.add('low');
+  }
+
+  ['inq','hap','mob'].forEach(k=>{
     const v = G.stats[k];
     document.getElementById('bar-'+k).style.width = v+'%';
     document.getElementById('val-'+k).textContent  = v;
+    document.getElementById('sv-'+k).textContent   = v+'%';
+    document.getElementById('sf-'+k).style.width   = v+'%';
   });
-  const bK = G.budget >= 1000 ? Math.round(G.budget/1000)+'K' : G.budget;
-  document.getElementById('sv-budget').textContent = bK;
-  document.getElementById('sv-mob').textContent    = G.stats.mob;
-  document.getElementById('sv-env').textContent    = G.stats.env;
-  document.getElementById('sv-hap').textContent    = G.stats.hap;
-  document.getElementById('sv-year').textContent   = G.year;
-  document.getElementById('sv-tasks').textContent  = G.tasksDone+'/'+TOTAL_TASKS;
-  document.getElementById('sv-score').textContent  = G.score;
-  document.getElementById('sf-budget').style.width = Math.min(100,G.budget/MAX_BUDGET*100)+'%';
-  document.getElementById('sf-mob').style.width    = G.stats.mob+'%';
-  document.getElementById('sf-env').style.width    = G.stats.env+'%';
-  document.getElementById('sf-hap').style.width    = G.stats.hap+'%';
-  document.getElementById('sf-year').style.width   = Math.min(100,(G.year-2025)/5*100)+'%';
-  document.getElementById('sf-tasks').style.width  = (G.tasksDone/TOTAL_TASKS*100)+'%';
-  document.getElementById('sf-score').style.width  = Math.max(0,Math.min(100,G.score/6000*100))+'%';
+
+  document.getElementById('sf-budget').style.width = Math.min(100, G.budget/MAX_BUDGET*100)+'%';
+  document.getElementById('sv-tasks').textContent = G.tasksDone+'/4';
+  document.getElementById('sf-tasks').style.width = (G.tasksDone/4*100)+'%';
+  document.getElementById('task-progress-fill').style.width = (G.tasksDone/4*100)+'%';
+
+  const step = G.tasksDone;
+  document.getElementById('hud-task-step').textContent = `Fase ${Math.min(step+1,4)}/4`;
+  if(step < 4){
+    document.getElementById('sequence-indicator').textContent = 'Prossimo: ' + DISTRICTS[TASK_ORDER[step]].name.toUpperCase();
+  } else {
+    document.getElementById('sequence-indicator').textContent = '✅ Tutte le fasi completate!';
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
-// END CHECK
+// END SCREEN
 // ═══════════════════════════════════════════════════════════════
-function checkEnd(){
-  if(G.budget <= 0){
-    setTimeout(()=>showEnd(false,'Sei rimasto senza fondi! La città non può andare avanti.'), 800);
-    return;
-  }
-  if(G.year > 2030){
-    const won = G.stats.mob>=75 && G.stats.env>=70 && G.stats.hap>=75;
-    setTimeout(()=>showEnd(won, won?'Hai raggiunto gli obiettivi 2030!':'Il 2030 è arrivato ma gli obiettivi non sono stati raggiunti.'), 800);
-    return;
-  }
-  if(G.stats.mob>=75 && G.stats.env>=70 && G.stats.hap>=75 && G.tasksDone>=6){
-    setTimeout(()=>showEnd(true,'Khaos City è un modello di sostenibilità! Ce l\'hai fatta prima del 2030!'), 1000);
-  }
-}
-function showEnd(won, reason){
+function showEnd(){
   const s = G.stats;
-  document.getElementById('end-emoji').textContent  = won?'🏆':'😔';
-  document.getElementById('end-title').textContent  = won?'Khaos City 2030!':'Missione Fallita';
-  document.getElementById('end-sub').textContent    = reason+`\n\nMobilità: ${s.mob}/100  |  Ambiente: ${s.env}/100  |  Felicità: ${s.hap}/100\nBudget rimasto: ${G.budget.toLocaleString('it')} €  |  Scelte sbagliate: ${G.badTasksDone}`;
-  document.getElementById('end-score').textContent  = (G.score>=0?'+':'')+G.score.toLocaleString('it')+' punti';
-  document.getElementById('end-score').style.color  = G.score>=0?'#1a3a1a':'#8a0000';
+  const wins = (s.hap >= 50 ? 1 : 0) + (s.mob >= 50 ? 1 : 0) + (s.inq <= 50 ? 1 : 0);
+  const won = wins >= 3;
+
+  document.getElementById('end-emoji').textContent = won ? '🏆' : '😔';
+  document.getElementById('end-title').textContent = won ? 'Ottimo lavoro, Sindaco!' : 'Fine mandato';
+
+  // Build choices summary
+  let choicesSummary = '';
+  TASK_ORDER.forEach(id=>{
+    const d = DISTRICTS[id];
+    const c = G.choices[id];
+    const label = c ? (c === 'B' ? d.optionB.label : d.optionC.label) : '—';
+    choicesSummary += `${d.icon} ${d.name}: ${label}\n`;
+  });
+  document.getElementById('end-sub').textContent = 'Riepilogo decisioni:\n' + choicesSummary;
+
+  const statsHtml = [
+    {label:'Inquinamento', val: s.inq+'%', color: s.inq<=50?'#efffef':'#ffefef', textColor: s.inq<=50?'#1a5a1a':'#8a0000'},
+    {label:'Felicità',     val: s.hap+'%', color: s.hap>=50?'#efffef':'#ffefef', textColor: s.hap>=50?'#1a5a1a':'#8a0000'},
+    {label:'Mobilità',     val: s.mob+'%', color: s.mob>=50?'#efffef':'#ffefef', textColor: s.mob>=50?'#1a5a1a':'#8a0000'},
+  ].map(x=>`<div class="end-stat-box" style="background:${x.color}">
+    <div class="label" style="color:${x.textColor}">${x.label}</div>
+    <div class="value" style="color:${x.textColor}">${x.val}</div>
+  </div>`).join('');
+  document.getElementById('end-stats-grid').innerHTML = statsHtml;
+
   document.getElementById('end-screen').style.display = 'flex';
 }
 
@@ -1014,7 +847,7 @@ function showEnd(won, reason){
 // TOAST
 // ═══════════════════════════════════════════════════════════════
 let toastT;
-function showToast(msg,type='ok'){
+function showToast(msg, type='ok'){
   const el = document.getElementById('toast');
   el.textContent = msg;
   el.className   = 'show '+type;
@@ -1022,66 +855,172 @@ function showToast(msg,type='ok'){
   toastT = setTimeout(()=>el.className='',3000);
 }
 
+function playAudio(id){
+  const audio = document.getElementById(id);
+  if(!audio) return;
+  audio.currentTime = 0;
+  audio.play().catch(()=>{});
+}
+
+function startBackgroundMusic(){
+  const bg = document.getElementById('bg-audio');
+  if(!bg) return;
+  bg.volume = 0.3;
+  bg.play().catch(()=>{});
+}
+
+function triggerMapTransition(newMap){
+  const overlay = document.getElementById('transition-overlay');
+  const img = document.getElementById('map-img');
+  if(overlay) overlay.classList.add('active');
+  if(img) img.classList.add('fading');
+  setTimeout(()=>{
+    playAudio('tada-audio');
+    switchMap(newMap);
+    if(overlay) overlay.classList.add('flash');
+  }, 250);
+  setTimeout(()=>{
+    if(overlay) overlay.classList.remove('flash');
+    if(overlay) overlay.classList.remove('active');
+  }, 800);
+}
+
 // ═══════════════════════════════════════════════════════════════
-// VEHICLE + PLAYER ANIMATION
+// PLAYER ANIMATION
 // ═══════════════════════════════════════════════════════════════
-let tramPct = 8, busPct = 70;
+const PLAYER = {
+  x: 47,
+  y: 47,
+  speed: 0.12,
+  dir: 'down',
+  frame: 0,
+  frameTimer: 0,
+};
+const SPRITE_PATH = 'assets/sindaco/';
 const keysDown = {};
-let nearDistrictPrev = null;
+let nearDistrict = null;
+
+const WALKABLE_ZONES = [
+  { x:22.8, y:53.9, w:8.2,  h:13.3 },
+  { x:16.0, y:30.5, w:26.7, h:15.5 },
+  { x:27.7, y:30.3, w:20.0, h:10.0 },
+  { x:45.1, y:42.6, w:8.5,  h:5.0  },
+  { x:59.6, y:23.5, w:11.0, h:44.8 },
+  { x:59.9, y:23.1, w:19.0, h:22.1 },
+  { x:30.6, y:29.2, w:14.8, h:36.0 },
+  { x:43.5, y:27.4, w:17.8, h:36.3 },
+  { x:7.0,  y:7.2,  w:3.3,  h:6.2  },
+];
+function isWalkable(px, py){
+  for(const z of WALKABLE_ZONES){
+    if(px>=z.x && px<=z.x+z.w && py>=z.y && py<=z.y+z.h) return true;
+  }
+  return false;
+}
+const DISTRICT_ZONES_PCT = [
+  {id:'mudtown',  cx:24, cy:25, r:22},
+  {id:'industry', cx:73, cy:25, r:22},
+  {id:'solaris',  cx:24, cy:74, r:22},
+  {id:'neon',     cx:73, cy:74, r:22},
+];
+
+function getPlayerSpriteFrame(){
+  return PLAYER.frame === 0
+    ? `${SPRITE_PATH}idle.png`
+    : `${SPRITE_PATH}walk${PLAYER.frame}.png`;
+}
+
+function updatePlayerSprite(){
+  const sprite = document.getElementById('player-sprite');
+  if(!sprite) return;
+  sprite.style.backgroundImage = `url('${getPlayerSpriteFrame()}')`;
+  let angle = 0;
+  if(PLAYER.dir === 'up') angle = 180;
+  else if(PLAYER.dir === 'left') angle = -90;
+  else if(PLAYER.dir === 'right') angle = 90;
+  sprite.style.transform = `translate(-50%,-50%) rotate(${angle}deg)`;
+}
 
 function animLoop(){
-  // Vehicles (% of map width, ride along center row ~46.5%)
-  tramPct = (tramPct + 0.018) % 96;
-  busPct  = busPct - 0.012; if(busPct < 2) busPct = 94;
-  const tramV = document.getElementById('tram-v');
-  const busV  = document.getElementById('bus-v');
-  if(tramV) tramV.style.left = tramPct+'%';
-  if(busV)  busV.style.left  = busPct +'%';
-
-  // Player WASD
+  let dx=0, dy=0;
   if(!taskPanelOpen && !currentZone){
-    let dx=0, dy=0;
     if(keysDown['w']||keysDown['arrowup'])    dy=-1;
     if(keysDown['s']||keysDown['arrowdown'])  dy= 1;
     if(keysDown['a']||keysDown['arrowleft'])  dx=-1;
     if(keysDown['d']||keysDown['arrowright']) dx= 1;
-    if(dx!==0&&dy!==0){dx*=0.707;dy*=0.707;}
-    PLAYER.x = Math.max(3,  Math.min(96, PLAYER.x + dx*PLAYER.speed));
-    PLAYER.y = Math.max(5,  Math.min(94, PLAYER.y + dy*PLAYER.speed));
-    const dot = document.getElementById('player-dot');
-    if(dot){ dot.style.left=PLAYER.x+'%'; dot.style.top=PLAYER.y+'%'; }
-  }
 
-  // Proximity detection
+    if(dx!==0 && dy!==0){
+      dy = 0; // no diagonal movement
+    }
+
+    if(dx!==0 || dy!==0){
+      if(dx!==0){
+        PLAYER.dir = dx < 0 ? 'left' : 'right';
+      } else if(dy < 0){
+        PLAYER.dir = 'up';
+      } else if(dy > 0){
+        PLAYER.dir = 'down';
+      }
+    }
+
+    const nx=PLAYER.x+dx*PLAYER.speed, ny=PLAYER.y+dy*PLAYER.speed;
+    const cnx=Math.max(1,Math.min(99,nx)), cny=Math.max(1,Math.min(99,ny));
+    let moved = false;
+    if(isWalkable(cnx,cny)){ PLAYER.x=cnx; PLAYER.y=cny; moved=true; }
+    else if(isWalkable(cnx,PLAYER.y)){ PLAYER.x=cnx; moved=true; }
+    else if(isWalkable(PLAYER.x,cny)){ PLAYER.y=cny; moved=true; }
+
+    const sprite=document.getElementById('player-sprite');
+    if(sprite){ sprite.style.left=PLAYER.x+'%'; sprite.style.top=PLAYER.y+'%'; }
+
+    if(moved){
+      PLAYER.frameTimer += 1;
+      if(PLAYER.frameTimer > 10){
+        PLAYER.frame = PLAYER.frame === 1 ? 2 : 1;
+        PLAYER.frameTimer = 0;
+      }
+      if(PLAYER.frame === 0) PLAYER.frame = 1;
+    } else {
+      PLAYER.frame = 0;
+      PLAYER.frameTimer = 0;
+    }
+  }
+  updatePlayerSprite();
+
   if(!currentZone){
-    let found = null;
+    let found=null;
     for(const z of DISTRICT_ZONES_PCT){
       const ddx=PLAYER.x-z.cx, ddy=PLAYER.y-z.cy;
       if(Math.sqrt(ddx*ddx+ddy*ddy)<z.r){ found=z.id; break; }
     }
-    if(found !== nearDistrict){
-      nearDistrict = found;
-      const hint = document.getElementById('proximity-hint');
+    if(found!==nearDistrict){
+      nearDistrict=found;
+      const hint=document.getElementById('proximity-hint');
       if(found){
-        const d = DISTRICTS[found];
-        hint.innerHTML = `${d.icon} <strong>${d.name}</strong> — Premi <strong>[T]</strong> o clicca per entrare`;
+        const d=DISTRICTS[found];
+        const step=TASK_ORDER.indexOf(found);
+        const current=getCurrentStep();
+        const locked=step>current;
+        hint.innerHTML = locked
+          ? `🔒 <strong>${d.name}</strong> — Prima completa ${DISTRICTS[TASK_ORDER[current]].name}`
+          : `${d.icon} <strong>${d.name}</strong> — Premi <strong>[T]</strong> per le proposte`;
         hint.classList.add('visible');
       } else {
         hint.classList.remove('visible');
       }
     }
   }
-
   requestAnimationFrame(animLoop);
 }
 
-// ─── Keyboard ───
 window.addEventListener('keydown', e=>{
   keysDown[e.key.toLowerCase()]=true;
   if(e.key.toLowerCase()==='t'){
     if(taskPanelOpen){ closeTaskPanel(); }
-    else if(currentZone){ closeTaskPanel(); }
-    else if(nearDistrict){ enterZone(nearDistrict); }
+    else if(currentZone){
+      if(!taskPanelOpen) openTaskPanel(currentZone);
+    }
+    else if(nearDistrict){ tryEnterZone(nearDistrict); }
   }
   if(e.key==='Escape'){
     if(taskPanelOpen) closeTaskPanel();
@@ -1091,53 +1030,12 @@ window.addEventListener('keydown', e=>{
 });
 window.addEventListener('keyup', e=>{ keysDown[e.key.toLowerCase()]=false; });
 
-// ─── Task Panel (T-key) ───
-function openTaskPanel(distId){
-  const d = DISTRICTS[distId];
-  document.getElementById('tp-icon').textContent = d.icon;
-  document.getElementById('tp-title').textContent = d.name+' — Proposte';
-  renderTasksInPanel(distId);
-  document.getElementById('task-panel').style.display='block';
-  document.getElementById('task-overlay-bg').style.display='block';
-  taskPanelOpen=true;
-}
-function closeTaskPanel(){
-  document.getElementById('task-panel').style.display='none';
-  document.getElementById('task-overlay-bg').style.display='none';
-  taskPanelOpen=false;
-}
-function renderTasksInPanel(id){
-  const d = DISTRICTS[id];
-  document.getElementById('tp-tasks').innerHTML = d.tasks.map(t=>{
-    const isDone=t.done, isGood=t.good, canAfford=G.budget>=t.cost;
-    const costClass = canAfford?'tag-cost':'tag-cost" style="background:#FDECEA;color:#900';
-    let btnHtml='';
-    if(isDone){
-      btnHtml=`<div style="font-size:12px;font-weight:700;color:#888;margin-top:8px">✅ Proposta già eseguita</div>`;
-    } else {
-      const disabled = !canAfford?'disabled':'';
-      btnHtml=`<button class="task-btn good-btn" ${disabled} onclick="requestConfirmTP('${id}','${t.id}')">${canAfford?'📋 Esamina Proposta':'❌ Budget insufficiente'}</button>`;
-    }
-    return `<div class="task-card ${isDone?(isGood?'done':'bad-done'):''}">
-      <div class="task-top"><div class="task-name">${t.name}</div></div>
-      <div class="task-desc">${t.desc}</div>
-      <div class="task-meta">
-        <span class="tag ${costClass}">💰 ${t.cost.toLocaleString('it')} €</span>
-        <span class="tag" style="background:#F0F0F0;color:#555">⏱️ ${t.years} anno${t.years>1?'i':''}</span>
-      </div>${btnHtml}</div>`;
-  }).join('');
-}
-function requestConfirmTP(distId,taskId){
-  closeTaskPanel();
-  requestConfirm(distId,taskId);
-}
-
 // ─── Touch ───
-const wrap2 = document.getElementById('city-wrap');
+const wrap2=document.getElementById('city-wrap');
 let initPinch=0;
 wrap2.addEventListener('touchstart',e=>{
   if(e.touches.length===1){ drag.on=true;drag.sx=e.touches[0].clientX;drag.sy=e.touches[0].clientY;drag.cx=cam.x;drag.cy=cam.y; }
-  else if(e.touches.length===2){ const dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY; initPinch=Math.sqrt(dx*dx+dy*dy); }
+  else if(e.touches.length===2){ const dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY;initPinch=Math.sqrt(dx*dx+dy*dy); }
 },{passive:true});
 wrap2.addEventListener('touchmove',e=>{
   if(e.touches.length===1&&drag.on){ cam.x=drag.cx+(e.touches[0].clientX-drag.sx);cam.y=drag.cy+(e.touches[0].clientY-drag.sy);applyCamera(true); }
@@ -1145,14 +1043,7 @@ wrap2.addEventListener('touchmove',e=>{
 },{passive:true});
 wrap2.addEventListener('touchend',()=>{drag.on=false;});
 
-// ═══════════════════════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════════════════════
-window.addEventListener('load',()=>{
-  centerCamera();
-  updateHUD();
-  animLoop();
-});
+window.addEventListener('load',()=>{ centerCamera(); updateHUD(); updatePlayerSprite(); animLoop(); startBackgroundMusic(); });
 window.addEventListener('resize', centerCamera);
 </script>
 </body>
