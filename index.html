@@ -177,8 +177,8 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
 .cb-no:hover{background:#ddd}
 
 /* ─── TOAST ─── */
-#toast{position:fixed;top:74px;left:50%;transform:translateX(-50%) translateY(-90px);padding:11px 26px;border-radius:40px;font-weight:800;font-size:14px;z-index:999;transition:transform .38s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap;max-width:90vw}
-#toast.show{transform:translateX(-50%) translateY(0)}
+#toast{position:fixed;top:74px;left:50%;transform:translateX(-50%) translateY(-120px);opacity:0;padding:11px 26px;border-radius:40px;font-weight:800;font-size:14px;z-index:999;transition:transform .38s cubic-bezier(.34,1.56,.64,1),opacity .38s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap;max-width:90vw}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 #toast.ok{background:#1a3a1a;color:#3fe89a}
 #toast.warn{background:#3a1a1a;color:#ff8080}
 #toast.info{background:#1a1a3a;color:#80c0ff}
@@ -933,9 +933,12 @@ let toastT;
 function showToast(msg, type='ok'){
   const el = document.getElementById('toast');
   el.textContent = msg;
-  el.className   = 'show '+type;
+  el.classList.remove('show','ok','warn','info');
+  el.classList.add('show', type);
   clearTimeout(toastT);
-  toastT = setTimeout(()=>el.className='',3000);
+  toastT = setTimeout(() => {
+    el.classList.remove('show','ok','warn','info');
+  }, 3000);
 }
 
 function playAudio(id){
