@@ -248,7 +248,6 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
 <!-- ═══ HUD ═══ -->
 <div id="hud">
   <span class="hud-title">🏙️ KHAOS CITY</span>
-  <span class="hud-pill hud-budget" id="hud-budget-pill">💰 <span id="hud-budget">250.000</span> €</span>
   <div class="hud-spacer"></div>
   <div class="hud-stat">🏭
     <div class="hud-bar-wrap"><div class="hud-bar" id="bar-inq" style="background:#E84040;width:0%"></div></div>
@@ -599,6 +598,7 @@ let cam = {x:0, y:0, scale:1};
 let drag = {on:false, sx:0, sy:0, cx:0, cy:0};
 let currentZone = null;
 let followPlayer = false;
+let gameOver = false;
 
 function getWrap(){ return document.getElementById('city-wrap'); }
 
@@ -694,6 +694,10 @@ function getCurrentStep(){ return G.tasksDone; } // 0=mudtown, 1=industry, 2=sol
 function tryEnterZone(id){
   const stepIdx = TASK_ORDER.indexOf(id);
   const current = getCurrentStep();
+  if(gameOver){
+    showToast('✅ Gioco terminato. Usa ESC per tornare alla schermata finale.', 'info');
+    return;
+  }
   if(stepIdx > current){
     const needed = DISTRICTS[TASK_ORDER[current]].name;
     showToast(`⚠️ Prima completa ${needed}!`, 'warn');
@@ -754,7 +758,6 @@ function openTaskPanel(id){
   }
 
   document.getElementById('tp-body').innerHTML = html;
-  centerCamera();
   document.getElementById('task-panel').style.display = 'block';
   document.getElementById('task-overlay-bg').style.display = 'block';
   taskPanelOpen = true;
@@ -892,6 +895,8 @@ function showEnd(){
   document.getElementById('end-stats-grid').innerHTML = statsHtml;
 
   document.getElementById('end-screen').style.display = 'flex';
+  gameOver = true;
+  showToast('Premi ESC per tornare alla mappa in sola visuale.', 'info');
   if(!won){
     setTimeout(()=>playAudio('tromba-audio'), 300);
   }
@@ -989,7 +994,7 @@ function triggerMapTransition(newMap){
 const PLAYER = {
   x: 47,
   y: 47,
-  speed: 0.04,
+  speed: 0.08,
   dir: 'down',
   frame: 0,
   frameTimer: 0,
@@ -1115,7 +1120,7 @@ function animLoop(){
     if(found!==nearDistrict){
       nearDistrict=found;
       const hint=document.getElementById('proximity-hint');
-      if(found){
+      if(found && !gameOver){
         const d=DISTRICTS[found];
         const step=TASK_ORDER.indexOf(found);
         const current=getCurrentStep();
@@ -1135,6 +1140,7 @@ function animLoop(){
 window.addEventListener('keydown', e=>{
   keysDown[e.key.toLowerCase()]=true;
   if(e.key.toLowerCase()==='t'){
+    if(gameOver) return;
     if(taskPanelOpen){ closeTaskPanel(); }
     else if(currentZone){
       if(!taskPanelOpen) openTaskPanel(currentZone);
@@ -1145,8 +1151,22 @@ window.addEventListener('keydown', e=>{
     zoomToPlayer();
   }
   if(e.key==='Escape'){
-    if(taskPanelOpen) closeTaskPanel();
-    else if(currentZone) exitZone();
+    if(taskPanelOpen){
+      closeTaskPanel();
+    } else if(currentZone){
+      exitZone();
+    } else if(gameOver){
+      const endScreen = document.getElementById('end-screen');
+      if(endScreen.style.display === 'flex'){
+        endScreen.style.display = 'none';
+        currentZone = null;
+        document.getElementById('zone-panel').classList.remove('visible');
+        document.querySelectorAll('.zone-overlay').forEach(z=>z.classList.remove('active'));
+        showToast('Mappa visibile. Premi ESC per tornare allo schermo finale.', 'info');
+      } else {
+        endScreen.style.display = 'flex';
+      }
+    }
   }
   if(['arrowup','arrowdown','arrowleft','arrowright'].includes(e.key.toLowerCase())) e.preventDefault();
 });
