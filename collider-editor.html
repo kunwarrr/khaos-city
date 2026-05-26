@@ -10,29 +10,29 @@ body{background:#111;color:#eee;font-family:monospace;overflow:hidden;height:100
 /* ── TOOLBAR ── */
 #toolbar{
   height:48px;background:#1a1a1a;border-bottom:1px solid #333;
-  display:flex;align-items:center;padding:0 12px;gap:10px;flex-shrink:0;
+  display:flex;align-items:center;padding:0 12px;gap:8px;flex-shrink:0;flex-wrap:nowrap;overflow-x:auto;
 }
-.tb-title{font-size:14px;font-weight:bold;color:#ff4444;letter-spacing:2px;text-transform:uppercase}
+.tb-title{font-size:14px;font-weight:bold;color:#ff4444;letter-spacing:2px;text-transform:uppercase;white-space:nowrap}
 .tb-btn{
-  background:#2a2a2a;border:1px solid #444;color:#ddd;padding:5px 14px;
+  background:#2a2a2a;border:1px solid #444;color:#ddd;padding:5px 12px;
   border-radius:6px;cursor:pointer;font-family:monospace;font-size:12px;
-  transition:background .15s,border-color .15s;
+  transition:background .15s,border-color .15s;white-space:nowrap;flex-shrink:0;
 }
 .tb-btn:hover{background:#3a3a3a;border-color:#666}
+.tb-btn.active{background:#1a2a3a;border-color:#4af;color:#4af}
 .tb-btn.danger{border-color:#ff4444;color:#ff4444}
 .tb-btn.danger:hover{background:#3a1010}
 .tb-btn.primary{background:#1a3a1a;border-color:#3fe89a;color:#3fe89a}
 .tb-btn.primary:hover{background:#2a4a2a}
-.tb-sep{width:1px;height:28px;background:#333;margin:0 4px}
-.tb-info{font-size:11px;color:#666;margin-left:auto}
-.tb-hint{font-size:11px;color:#555;padding:4px 10px;background:#161616;border-radius:4px;border:1px solid #2a2a2a}
+.tb-sep{width:1px;height:28px;background:#333;margin:0 2px;flex-shrink:0}
+.tb-hint{font-size:11px;color:#555;padding:4px 8px;background:#161616;border-radius:4px;border:1px solid #2a2a2a;white-space:nowrap;flex-shrink:0}
 
 /* ── MAIN AREA ── */
 #main{flex:1;display:flex;overflow:hidden}
 
 /* ── VIEWPORT ── */
 #viewport{
-  flex:1;overflow:hidden;position:relative;cursor:crosshair;
+  flex:1;overflow:hidden;position:relative;
   background:#0d0d0d;
 }
 #canvas-wrap{
@@ -40,40 +40,40 @@ body{background:#111;color:#eee;font-family:monospace;overflow:hidden;height:100
 }
 #map-img{display:block;image-rendering:pixelated;user-select:none;pointer-events:none}
 
-/* ── COLLIDER OVERLAYS ── */
-.collider{
-  position:absolute;
-  background:rgba(255,40,40,0.35);
-  border:2px solid rgba(255,60,60,0.9);
-  box-shadow:inset 0 0 0 1px rgba(255,120,120,0.3), 0 0 8px rgba(255,40,40,0.4);
+/* ── SVG OVERLAY ── */
+#svg-layer{
+  position:absolute;inset:0;overflow:visible;pointer-events:none;
+}
+.poly-fill{
+  fill:rgba(255,40,40,0.28);
+  stroke:rgba(255,70,70,0.9);
+  stroke-width:2;
   cursor:move;
-  user-select:none;
-  border-radius:2px;
-}
-.collider.selected{
-  background:rgba(255,160,40,0.4);
-  border-color:rgba(255,180,40,1);
-  box-shadow:inset 0 0 0 1px rgba(255,220,100,0.4), 0 0 14px rgba(255,160,40,0.6);
-}
-.collider .lbl{
-  position:absolute;top:2px;left:3px;
-  font-size:9px;color:rgba(255,200,200,0.9);
-  pointer-events:none;line-height:1;white-space:nowrap;text-shadow:0 1px 3px #000;
-}
-/* 8 resize handles */
-.handle{
-  position:absolute;width:10px;height:10px;
-  background:#ff4;border:1px solid #000;border-radius:2px;
   pointer-events:all;
+  transition:fill .15s;
 }
-.handle.tl{top:-5px;left:-5px;cursor:nw-resize}
-.handle.tc{top:-5px;left:calc(50% - 5px);cursor:n-resize}
-.handle.tr{top:-5px;right:-5px;cursor:ne-resize}
-.handle.ml{top:calc(50% - 5px);left:-5px;cursor:w-resize}
-.handle.mr{top:calc(50% - 5px);right:-5px;cursor:e-resize}
-.handle.bl{bottom:-5px;left:-5px;cursor:sw-resize}
-.handle.bc{bottom:-5px;left:calc(50% - 5px);cursor:s-resize}
-.handle.br{bottom:-5px;right:-5px;cursor:se-resize}
+.poly-fill:hover{fill:rgba(255,80,80,0.4)}
+.poly-fill.selected{
+  fill:rgba(255,160,40,0.35);
+  stroke:rgba(255,200,50,1);
+  stroke-width:2.5;
+}
+.poly-vertex{
+  fill:#ff4;stroke:#000;stroke-width:1;
+  cursor:move;pointer-events:all;r:6;
+  transition:fill .1s;
+}
+.poly-vertex:hover{fill:#fff}
+.poly-vertex.selected{fill:#f80;stroke:#ff0;stroke-width:1.5}
+.poly-midpoint{
+  fill:rgba(200,200,200,0.5);stroke:rgba(255,255,255,0.4);stroke-width:1;
+  cursor:crosshair;pointer-events:all;r:4;
+}
+.poly-midpoint:hover{fill:rgba(255,255,200,0.8)}
+/* drawing preview line */
+.draw-preview{stroke:rgba(255,180,50,0.7);stroke-width:2;stroke-dasharray:6 4;fill:none;pointer-events:none}
+.draw-dot{fill:#ffb020;stroke:#fff;stroke-width:1;pointer-events:none;r:5}
+.draw-close-hint{fill:#0f0;stroke:#060;stroke-width:1;r:7;cursor:pointer;pointer-events:all}
 
 /* ── SIDEBAR ── */
 #sidebar{
@@ -90,7 +90,7 @@ body{background:#111;color:#eee;font-family:monospace;overflow:hidden;height:100
 }
 .zone-item:hover{background:#222}
 .zone-item.selected{background:#2a1a1a;border-color:#ff4444}
-.zone-dot{width:8px;height:8px;background:#ff4444;border-radius:1px;flex-shrink:0}
+.zone-dot{width:8px;height:8px;background:#ff4444;border-radius:50%;flex-shrink:0}
 .zone-dot.selected{background:#ffaa00}
 .zone-coords{font-size:10px;color:#555;margin-left:auto;white-space:nowrap}
 .zone-del{background:none;border:none;color:#444;cursor:pointer;font-size:13px;padding:0 2px;transition:color .1s}
@@ -109,37 +109,46 @@ body{background:#111;color:#eee;font-family:monospace;overflow:hidden;height:100
   font-size:10px;color:#555;line-height:1.8;
 }
 #coords-display span{color:#aaa}
+#mode-indicator{
+  padding:6px 12px;background:#0d1a0d;border-top:1px solid #1a3a1a;
+  font-size:11px;color:#3fe89a;letter-spacing:1px;font-weight:bold;
+  min-height:28px;
+}
 </style>
 </head>
 <body>
 
 <div id="toolbar">
-  <div class="tb-title">⬛ Collider Editor</div>
+  <div class="tb-title">✏️ Collider Editor</div>
   <div class="tb-sep"></div>
-  <button class="tb-btn primary" id="btn-add">+ Aggiungi Zona</button>
-  <button class="tb-btn danger" id="btn-del-sel">🗑 Elimina Selezionata</button>
+  <button class="tb-btn active" id="btn-pen" title="Disegna poligono">✏️ Penna</button>
+  <button class="tb-btn" id="btn-select" title="Seleziona / sposta">↖ Seleziona</button>
+  <div class="tb-sep"></div>
+  <button class="tb-btn danger" id="btn-del-sel">🗑 Elimina</button>
   <button class="tb-btn" id="btn-clear">Pulisci tutto</button>
   <div class="tb-sep"></div>
   <button class="tb-btn" id="btn-load-default">Carica default</button>
-  <button class="tb-btn primary" id="btn-export">📋 Esporta JSON</button>
+  <button class="tb-btn primary" id="btn-export">📋 Esporta JS</button>
   <div class="tb-sep"></div>
-  <div class="tb-hint">Click mappa = nuova zona · Drag = sposta · Handle = ridimensiona · Scroll = zoom · Del = elimina</div>
+  <div class="tb-hint" id="toolbar-hint">Click = aggiungi punto · Doppio-click / Invio = chiudi · Esc = annulla</div>
 </div>
 
 <div id="main">
-  <div id="viewport" id="viewport">
+  <div id="viewport">
     <div id="canvas-wrap">
-      <img id="map-img" src="assets/mappa.png" draggable="false"/>
-      <div id="colliders-layer" style="position:absolute;inset:0;pointer-events:none"></div>
+      <img id="map-img" src="assets/nnnn.png" draggable="false"/>
+      <!-- SVG sits exactly on top of the image -->
+      <svg id="svg-layer" xmlns="http://www.w3.org/2000/svg"></svg>
     </div>
   </div>
 
   <div id="sidebar">
-    <div id="sidebar-hdr">Zone collider (<span id="zone-count">0</span>)</div>
+    <div id="sidebar-hdr">Poligoni collider (<span id="zone-count">0</span>)</div>
     <div id="zone-list"></div>
+    <div id="mode-indicator" id="mode-ind">Modalità: PENNA</div>
     <div id="coords-display">
-      X: <span id="cd-x">—</span> &nbsp; Y: <span id="cd-y">—</span><br>
-      W: <span id="cd-w">—</span> &nbsp; H: <span id="cd-h">—</span>
+      Punti: <span id="cd-pts">—</span><br>
+      Area≈: <span id="cd-area">—</span>%²
     </div>
     <div id="export-area">
       <button class="tb-btn primary" style="width:100%;margin-bottom:6px" id="btn-export2">📋 Copia codice JS</button>
@@ -150,41 +159,100 @@ body{background:#111;color:#eee;font-family:monospace;overflow:hidden;height:100
 
 <script>
 // ══════════════════════════════════════════
-// STATE
+// CONFIG
 // ══════════════════════════════════════════
 const MAP_W = 1400, MAP_H = 900;
-let cam = { x: 0, y: 0, scale: 1 };
-let zones = [];
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let cam = { x:0, y:0, scale:1 };
+let polys = [];          // [{id, label, pts:[{x,y},...]}]  x,y in 0-100%
 let selectedId = null;
 let idCounter = 0;
 
-// Interaction state
-let dragState = null; // { type: 'move'|'resize'|'cam'|'create', ... }
+// Modes: 'pen' | 'select'
+let mode = 'pen';
+
+// Drawing state (pen mode)
+let drawing = {
+  active: false,
+  pts: [],   // points so far (% coords)
+};
+
+// Drag state (select mode)
+let dragState = null; // {type:'move'|'vertex'|'cam', ...}
 
 // ══════════════════════════════════════════
-// DEFAULT ZONES (from game)
+// DEFAULT ZONES (converted to polygons)
 // ══════════════════════════════════════════
-const DEFAULT_ZONES = [
-  { label:'Strada V. Centrale', x:45, y:0,  w:9,  h:100 },
-  { label:'Strada O. Centrale', x:0,  y:43, w:100,h:14  },
-  { label:'Mud strada O 1',     x:1,  y:16, w:43, h:7   },
-  { label:'Mud strada O 2',     x:1,  y:28, w:43, h:6   },
-  { label:'Mud strada V 1',     x:14, y:1,  w:7,  h:42  },
-  { label:'Mud strada V 2',     x:30, y:1,  w:7,  h:42  },
-  { label:'Iron strada O 1',    x:49, y:20, w:50, h:6   },
-  { label:'Iron strada O 2',    x:49, y:33, w:50, h:5   },
-  { label:'Iron strada V 1',    x:76, y:1,  w:7,  h:42  },
-  { label:'Iron strada V 2',    x:89, y:1,  w:9,  h:42  },
-  { label:'Sol strada O 1',     x:1,  y:62, w:43, h:6   },
-  { label:'Sol strada O 2',     x:1,  y:76, w:43, h:6   },
-  { label:'Sol strada V 1',     x:14, y:57, w:6,  h:41  },
-  { label:'Sol strada V 2',     x:30, y:57, w:6,  h:41  },
-  { label:'Neon strada O 1',    x:49, y:62, w:50, h:5   },
-  { label:'Neon strada O 2',    x:49, y:76, w:50, h:6   },
-  { label:'Neon strada V 1',    x:76, y:57, w:7,  h:41  },
-  { label:'Neon strada V 2',    x:89, y:57, w:9,  h:41  },
-  { label:'Piazza Fontana',     x:40, y:37, w:19, h:22  },
+// Point-in-polygon collision (use isWalkable from index.html)
+// Point-in-polygon collision (use isWalkable from index.html)
+// Point-in-polygon collision (use isWalkable from index.html)
+const DEFAULT_RECTS = [
+  { label:'zona_21', pts:[{x:49.03,y:11.39},{x:49.3,y:36.09},{x:53.65,y:36.19},{x:53.72,y:11.5},{x:53.72,y:11.6},{x:53.65,y:11.6}] },
+  { label:'zona_22', pts:[{x:66.11,y:42.96},{x:66.11,y:36.71},{x:67.65,y:36.71},{x:66.71,y:25.98},{x:65.11,y:26.71},{x:65.44,y:37.02},{x:58.88,y:37.02},{x:58.68,y:43.28},{x:54.59,y:33.27},{x:59.41,y:43.07},{x:57.94,y:36.92},{x:57.94,y:36.92}] },
+  { label:'zona_23', pts:[{x:57.87,y:43.17},{x:64.17,y:42.86},{x:53.92,y:33.06},{x:53.85,y:35.98},{x:53.92,y:36.09},{x:53.92,y:36.09}] },
+  { label:'zona_24', pts:[{x:49.03,y:48.07},{x:49.1,y:69.84},{x:54.12,y:69.74},{x:53.92,y:48.48},{x:53.92,y:48.48},{x:53.92,y:48.48}] },
+  { label:'zona_25', pts:[{x:19.49,y:37.54},{x:44.34,y:37.34},{x:44.14,y:40.67},{x:19.49,y:40.46}] },
+  { label:'zona_26', pts:[{x:15.54,y:37.86},{x:18.76,y:37.86},{x:18.42,y:62.65},{x:15.95,y:61.3}] },
+  { label:'zona_27', pts:[{x:18.76,y:53.38},{x:26.06,y:53.69},{x:25.99,y:52.24}] },
+  { label:'zona_28', pts:[{x:18.69,y:52.44},{x:25.79,y:52.24},{x:18.89,y:53.49}] },
+  { label:'zona_29', pts:[{x:23.18,y:53.9},{x:24.85,y:56.51},{x:31.89,y:56.82},{x:32.15,y:53.59},{x:32.42,y:52.44}] },
+  { label:'zona_30', pts:[{x:27.26,y:57.13},{x:27.26,y:62.97},{x:29.54,y:62.97},{x:29.68,y:56.61}] },
+  { label:'zona_31', pts:[{x:54.32,y:65.05},{x:54.59,y:69.95},{x:57.74,y:66.61},{x:63.16,y:65.05}] },
+  { label:'zona_32', pts:[{x:58.81,y:66.82},{x:61.42,y:69.63},{x:63.3,y:69.63},{x:63.1,y:65.05}] },
+  { label:'zona_33', pts:[{x:60.48,y:55.46},{x:60.42,y:57.97},{x:62.63,y:58.07},{x:63.83,y:51.09}] },
+  { label:'zona_34', pts:[{x:60.35,y:61.51},{x:60.28,y:64.84},{x:62.9,y:65.26},{x:62.83,y:58.28}] },
+  { label:'zona_35', pts:[{x:60.75,y:58.59},{x:60.82,y:60.15},{x:62.23,y:58.49}] },
+  { label:'zona_36', pts:[{x:16.48,y:36.5},{x:16.08,y:21.4},{x:48.23,y:21.08},{x:48.29,y:24.1},{x:19.16,y:25.04},{x:18.49,y:36.61}] },
+  { label:'zona_37', pts:[{x:44.48,y:37.13},{x:48.83,y:32.54},{x:49.17,y:36.4},{x:46.35,y:39.84},{x:47.49,y:44.94},{x:49.5,y:45.67},{x:44.41,y:41.3},{x:48.63,y:47.96},{x:44.48,y:40.46}] },
+  { label:'zona_38', pts:[{x:44.01,y:41.82},{x:48.7,y:47.76},{x:54.52,y:48.07},{x:58.27,y:43.69},{x:48.29,y:45.98}] },
+  { label:'zona_40', pts:[{x:46.42,y:43.9},{x:55.13,y:43.8},{x:56.73,y:41.4},{x:58.14,y:43.38}] },
+  { label:'zona_42', pts:[{x:56.93,y:34.73},{x:60.35,y:33.06},{x:64.17,y:30.36},{x:65.04,y:32.44},{x:64.97,y:36.82},{x:58.68,y:37.02}] },
+  { label:'zona_43', pts:[{x:54.52,y:32.44},{x:59.01,y:36.61},{x:57.47,y:37.13},{x:54.72,y:34.84}] },
+  { label:'zona_44', pts:[{x:59.88,y:32.23},{x:60.15,y:34.42},{x:63.16,y:32.34},{x:62.36,y:30.77}] },
+  { label:'zona_45', pts:[{x:65.44,y:18.48},{x:70.8,y:19.62},{x:71,y:24},{x:66.18,y:24.21},{x:67.12,y:26.19},{x:64.77,y:31.92}] },
 ];
+
+// Helper (paste in index.html):
+// function pointInPoly(px,py,pts){
+//   let inside=false;
+//   for(let i=0,j=pts.length-1;i<pts.length;j=i++){
+//     if((pts[i].y>py)!==(pts[j].y>py)&&px<(pts[j].x-pts[i].x)*(py-pts[i].y)/(pts[j].y-pts[i].y)+pts[i].x) inside=!inside;
+//   }
+//   return inside;
+// }
+// function isWalkable(px,py){ return WALKABLE_ZONES.some(z=>pointInPoly(px,py,z.pts)); }
+
+// Helper (paste in index.html):
+// function pointInPoly(px,py,pts){
+//   let inside=false;
+//   for(let i=0,j=pts.length-1;i<pts.length;j=i++){
+//     if((pts[i].y>py)!==(pts[j].y>py)&&px<(pts[j].x-pts[i].x)*(py-pts[i].y)/(pts[j].y-pts[i].y)+pts[i].x) inside=!inside;
+//   }
+//   return inside;
+// }
+// function isWalkable(px,py){ return WALKABLE_ZONES.some(z=>pointInPoly(px,py,z.pts)); }
+// Helper (paste in index.html):
+// function pointInPoly(px,py,pts){
+//   let inside=false;
+//   for(let i=0,j=pts.length-1;i<pts.length;j=i++){
+//     if((pts[i].y>py)!==(pts[j].y>py)&&px<(pts[j].x-pts[i].x)*(py-pts[i].y)/(pts[j].y-pts[i].y)+pts[i].x) inside=!inside;
+//   }
+//   return inside;
+// }
+// function isWalkable(px,py){ return WALKABLE_ZONES.some(z=>pointInPoly(px,py,z.pts)); }
+
+function rectToPoly(r){
+  return [
+    {x:r.x,       y:r.y},
+    {x:r.x+r.w,   y:r.y},
+    {x:r.x+r.w,   y:r.y+r.h},
+    {x:r.x,       y:r.y+r.h},
+  ];
+}
 
 // ══════════════════════════════════════════
 // CAMERA
@@ -202,121 +270,21 @@ function centerCamera(){
   cam.x = (vw - MAP_W*s)/2;
   cam.y = (vh - MAP_H*s)/2;
   applyCamera();
+  resizeSVG();
+}
+
+function resizeSVG(){
+  const svg = document.getElementById('svg-layer');
+  svg.setAttribute('width',  MAP_W);
+  svg.setAttribute('height', MAP_H);
+  svg.setAttribute('viewBox', `0 0 ${MAP_W} ${MAP_H}`);
 }
 
 // ══════════════════════════════════════════
-// ZONE MANAGEMENT
+// COORD HELPERS
 // ══════════════════════════════════════════
-function addZone(z){
-  const id = ++idCounter;
-  zones.push({ id, label: z.label||`zona_${id}`, x:z.x, y:z.y, w:z.w, h:z.h });
-  renderAllZones();
-  selectZone(id);
-  updateSidebar();
-}
-
-function deleteZone(id){
-  zones = zones.filter(z=>z.id!==id);
-  if(selectedId===id) selectedId=null;
-  renderAllZones();
-  updateSidebar();
-  updateCoordsDisplay(null);
-}
-
-function selectZone(id){
-  selectedId = id;
-  document.querySelectorAll('.collider').forEach(el=>{
-    el.classList.toggle('selected', el.dataset.id==id);
-    el.querySelectorAll('.handle').forEach(h=>h.style.display = el.dataset.id==id?'block':'none');
-  });
-  document.querySelectorAll('.zone-item').forEach(el=>{
-    el.classList.toggle('selected', el.dataset.id==id);
-    el.querySelector('.zone-dot').classList.toggle('selected', el.dataset.id==id);
-  });
-  const z = zones.find(z=>z.id===id);
-  if(z) updateCoordsDisplay(z);
-}
-
-// ══════════════════════════════════════════
-// RENDER
-// ══════════════════════════════════════════
-function renderAllZones(){
-  const layer = document.getElementById('colliders-layer');
-  layer.innerHTML = '';
-  for(const z of zones){
-    const el = document.createElement('div');
-    el.className = 'collider' + (z.id===selectedId?' selected':'');
-    el.dataset.id = z.id;
-    el.style.cssText = `left:${z.x}%;top:${z.y}%;width:${z.w}%;height:${z.h}%;pointer-events:all`;
-
-    // Label
-    const lbl = document.createElement('div');
-    lbl.className='lbl';
-    lbl.textContent = z.label;
-    el.appendChild(lbl);
-
-    // Resize handles (hidden unless selected)
-    const handles = ['tl','tc','tr','ml','mr','bl','bc','br'];
-    handles.forEach(h=>{
-      const hEl = document.createElement('div');
-      hEl.className = `handle ${h}`;
-      hEl.dataset.handle = h;
-      hEl.style.display = z.id===selectedId ? 'block':'none';
-      hEl.addEventListener('mousedown', e=>{ e.stopPropagation(); startResize(e, z.id, h); });
-      el.appendChild(hEl);
-    });
-
-    el.addEventListener('mousedown', e=>{ e.stopPropagation(); startMove(e, z.id); });
-    layer.appendChild(el);
-  }
-}
-
-function rerenderZone(id){
-  const z = zones.find(z=>z.id===id);
-  if(!z) return;
-  const el = document.querySelector(`.collider[data-id="${id}"]`);
-  if(!el) return;
-  el.style.left   = z.x+'%';
-  el.style.top    = z.y+'%';
-  el.style.width  = z.w+'%';
-  el.style.height = z.h+'%';
-  updateCoordsDisplay(z);
-  updateSidebarItem(id);
-}
-
-function updateSidebar(){
-  document.getElementById('zone-count').textContent = zones.length;
-  const list = document.getElementById('zone-list');
-  list.innerHTML = zones.map(z=>`
-    <div class="zone-item ${z.id===selectedId?'selected':''}" data-id="${z.id}" onclick="selectZone(${z.id})">
-      <div class="zone-dot ${z.id===selectedId?'selected':''}"></div>
-      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${z.label}</span>
-      <span class="zone-coords">${Math.round(z.x)},${Math.round(z.y)}</span>
-      <button class="zone-del" onclick="event.stopPropagation();deleteZone(${z.id})">✕</button>
-    </div>
-  `).join('');
-}
-
-function updateSidebarItem(id){
-  const z = zones.find(z=>z.id===id);
-  if(!z) return;
-  const el = document.querySelector(`.zone-item[data-id="${id}"]`);
-  if(el){
-    el.querySelector('.zone-coords').textContent = `${Math.round(z.x)},${Math.round(z.y)}`;
-  }
-}
-
-function updateCoordsDisplay(z){
-  document.getElementById('cd-x').textContent = z ? z.x.toFixed(1) : '—';
-  document.getElementById('cd-y').textContent = z ? z.y.toFixed(1) : '—';
-  document.getElementById('cd-w').textContent = z ? z.w.toFixed(1) : '—';
-  document.getElementById('cd-h').textContent = z ? z.h.toFixed(1) : '—';
-}
-
-// ══════════════════════════════════════════
-// INTERACTION
-// ══════════════════════════════════════════
-function clientToMap(cx, cy){
+// Client → % coords (accounting for camera transform)
+function clientToPct(cx, cy){
   const vp = document.getElementById('viewport');
   const rect = vp.getBoundingClientRect();
   const mx = (cx - rect.left - cam.x) / cam.scale;
@@ -324,194 +292,510 @@ function clientToMap(cx, cy){
   return { x: (mx/MAP_W)*100, y: (my/MAP_H)*100 };
 }
 
-function startMove(e, id){
-  selectZone(id);
-  const z = zones.find(z=>z.id===id);
-  const mp = clientToMap(e.clientX, e.clientY);
-  dragState = { type:'move', id, ox:z.x, oy:z.y, sx:mp.x, sy:mp.y };
-  e.preventDefault();
+// % → SVG user units
+function pctToSVG(px, py){
+  return { x: (px/100)*MAP_W, y: (py/100)*MAP_H };
 }
 
-function startResize(e, id, handle){
-  selectZone(id);
-  const z = zones.find(z=>z.id===id);
-  const mp = clientToMap(e.clientX, e.clientY);
-  dragState = { type:'resize', id, handle,
-    ox:z.x, oy:z.y, ow:z.w, oh:z.h,
-    sx:mp.x, sy:mp.y };
-  e.preventDefault();
+function ptsToSVGPoints(pts){
+  return pts.map(p=>{ const s=pctToSVG(p.x,p.y); return `${s.x},${s.y}`; }).join(' ');
 }
 
+// ══════════════════════════════════════════
+// POLYGON MANAGEMENT
+// ══════════════════════════════════════════
+function addPoly(label, pts){
+  const id = ++idCounter;
+  polys.push({ id, label: label||`zona_${id}`, pts: pts.map(p=>({x:+p.x.toFixed(2),y:+p.y.toFixed(2)})) });
+  renderAll();
+  selectPoly(id);
+  updateSidebar();
+  return id;
+}
+
+function deletePoly(id){
+  polys = polys.filter(p=>p.id!==id);
+  if(selectedId===id) selectedId=null;
+  renderAll();
+  updateSidebar();
+  updateCoordsDisplay(null);
+}
+
+function selectPoly(id){
+  selectedId = id;
+  renderAll();
+  document.querySelectorAll('.zone-item').forEach(el=>{
+    el.classList.toggle('selected', parseInt(el.dataset.id)===id);
+    el.querySelector('.zone-dot').classList.toggle('selected', parseInt(el.dataset.id)===id);
+  });
+  const p = polys.find(p=>p.id===id);
+  if(p) updateCoordsDisplay(p);
+}
+
+// ══════════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════════
+function renderAll(){
+  const svg = document.getElementById('svg-layer');
+  // Remove everything except draw-preview group
+  Array.from(svg.children).forEach(c=>{ if(c.id!=='draw-group') c.remove(); });
+
+  for(const poly of polys){
+    const sel = poly.id === selectedId;
+    const g = document.createElementNS(SVG_NS,'g');
+    g.dataset.id = poly.id;
+
+    // Polygon shape
+    const shape = document.createElementNS(SVG_NS,'polygon');
+    shape.setAttribute('points', ptsToSVGPoints(poly.pts));
+    shape.classList.add('poly-fill');
+    if(sel) shape.classList.add('selected');
+    shape.addEventListener('mousedown', e=>{ if(mode==='select'){ e.stopPropagation(); selectPoly(poly.id); startMovePoly(e, poly.id); } });
+    shape.addEventListener('click', e=>{ if(mode==='select'){ e.stopPropagation(); selectPoly(poly.id); } });
+    g.appendChild(shape);
+
+    // Label text (centroid)
+    const cx = poly.pts.reduce((s,p)=>s+p.x,0)/poly.pts.length;
+    const cy = poly.pts.reduce((s,p)=>s+p.y,0)/poly.pts.length;
+    const sc = pctToSVG(cx,cy);
+    const lbl = document.createElementNS(SVG_NS,'text');
+    lbl.setAttribute('x', sc.x); lbl.setAttribute('y', sc.y);
+    lbl.setAttribute('text-anchor','middle'); lbl.setAttribute('dominant-baseline','middle');
+    lbl.setAttribute('font-size','10'); lbl.setAttribute('fill','rgba(255,200,200,0.9)');
+    lbl.setAttribute('pointer-events','none');
+    lbl.textContent = poly.label;
+    g.appendChild(lbl);
+
+    // Vertex handles & midpoints (only when selected)
+    if(sel && mode==='select'){
+      poly.pts.forEach((pt, i)=>{
+        const sv = pctToSVG(pt.x, pt.y);
+        const v = document.createElementNS(SVG_NS,'circle');
+        v.setAttribute('cx', sv.x); v.setAttribute('cy', sv.y); v.setAttribute('r',6);
+        v.classList.add('poly-vertex', 'selected');
+        v.addEventListener('mousedown', e=>{ e.stopPropagation(); startMoveVertex(e, poly.id, i); });
+        v.addEventListener('dblclick', e=>{ e.stopPropagation(); removeVertex(poly.id, i); });
+        g.appendChild(v);
+      });
+
+      // Midpoints for inserting vertices
+      poly.pts.forEach((pt, i)=>{
+        const next = poly.pts[(i+1)%poly.pts.length];
+        const mx = (pt.x+next.x)/2, my = (pt.y+next.y)/2;
+        const sm = pctToSVG(mx,my);
+        const m = document.createElementNS(SVG_NS,'circle');
+        m.setAttribute('cx', sm.x); m.setAttribute('cy', sm.y); m.setAttribute('r',4);
+        m.classList.add('poly-midpoint');
+        m.title = 'Click per inserire vertice';
+        m.addEventListener('mousedown', e=>{ e.stopPropagation(); insertVertex(poly.id, i, {x:mx,y:my}); });
+        g.appendChild(m);
+      });
+    }
+
+    svg.appendChild(g);
+  }
+  updateModeIndicator();
+}
+
+// ══════════════════════════════════════════
+// DRAW GROUP (pen preview)
+// ══════════════════════════════════════════
+function getOrCreateDrawGroup(){
+  let g = document.getElementById('draw-group');
+  if(!g){ g = document.createElementNS(SVG_NS,'g'); g.id='draw-group'; document.getElementById('svg-layer').appendChild(g); }
+  g.innerHTML = '';
+  return g;
+}
+
+function updateDrawPreview(mousePos){
+  const g = getOrCreateDrawGroup();
+  const pts = drawing.pts;
+  if(pts.length === 0) return;
+
+  // Filled polygon preview
+  if(pts.length >= 3){
+    const preview = document.createElementNS(SVG_NS,'polygon');
+    preview.setAttribute('points', ptsToSVGPoints(pts));
+    preview.setAttribute('fill','rgba(255,140,30,0.18)');
+    preview.setAttribute('stroke','none');
+    preview.setAttribute('pointer-events','none');
+    g.appendChild(preview);
+  }
+
+  // Lines between placed points
+  for(let i=1;i<pts.length;i++){
+    const a=pctToSVG(pts[i-1].x,pts[i-1].y), b=pctToSVG(pts[i].x,pts[i].y);
+    const line = document.createElementNS(SVG_NS,'line');
+    line.setAttribute('x1',a.x); line.setAttribute('y1',a.y);
+    line.setAttribute('x2',b.x); line.setAttribute('y2',b.y);
+    line.classList.add('draw-preview');
+    g.appendChild(line);
+  }
+
+  // Line from last point to mouse
+  if(mousePos && pts.length >= 1){
+    const last = pctToSVG(pts[pts.length-1].x, pts[pts.length-1].y);
+    const cur  = pctToSVG(mousePos.x, mousePos.y);
+    const line = document.createElementNS(SVG_NS,'line');
+    line.setAttribute('x1',last.x); line.setAttribute('y1',last.y);
+    line.setAttribute('x2',cur.x);  line.setAttribute('y2',cur.y);
+    line.classList.add('draw-preview');
+    g.appendChild(line);
+
+    // Close hint: closing line if >= 3 pts
+    if(pts.length>=3){
+      const first = pctToSVG(pts[0].x, pts[0].y);
+      const cl = document.createElementNS(SVG_NS,'line');
+      cl.setAttribute('x1',cur.x); cl.setAttribute('y1',cur.y);
+      cl.setAttribute('x2',first.x); cl.setAttribute('y2',first.y);
+      cl.setAttribute('stroke','rgba(0,255,60,0.4)');
+      cl.setAttribute('stroke-width','1.5');
+      cl.setAttribute('stroke-dasharray','4 4');
+      cl.setAttribute('fill','none');
+      cl.setAttribute('pointer-events','none');
+      g.appendChild(cl);
+    }
+  }
+
+  // Placed point dots
+  pts.forEach((pt, i)=>{
+    const sv = pctToSVG(pt.x, pt.y);
+    const c = document.createElementNS(SVG_NS,'circle');
+    c.setAttribute('cx', sv.x); c.setAttribute('cy', sv.y); c.setAttribute('r', i===0 && pts.length>=3 ? 8 : 5);
+    c.classList.add(i===0 && pts.length>=3 ? 'draw-close-hint' : 'draw-dot');
+    c.setAttribute('pointer-events', i===0 && pts.length>=3 ? 'all':'none');
+    if(i===0 && pts.length>=3){
+      c.addEventListener('click', e=>{ e.stopPropagation(); closePoly(); });
+    }
+    g.appendChild(c);
+  });
+
+  // Point count badge
+  if(pts.length>0){
+    const sv = pctToSVG(pts[pts.length-1].x, pts[pts.length-1].y);
+    const txt = document.createElementNS(SVG_NS,'text');
+    txt.setAttribute('x', sv.x+10); txt.setAttribute('y', sv.y-8);
+    txt.setAttribute('font-size','11'); txt.setAttribute('fill','#ffb020');
+    txt.setAttribute('pointer-events','none');
+    txt.textContent = `${pts.length} pt${pts.length>1?'i':'o'}`;
+    g.appendChild(txt);
+  }
+}
+
+function clearDrawPreview(){
+  const g = document.getElementById('draw-group');
+  if(g) g.innerHTML='';
+}
+
+// ══════════════════════════════════════════
+// PEN ACTIONS
+// ══════════════════════════════════════════
+function startDrawing(){ drawing.active=true; drawing.pts=[]; clearDrawPreview(); }
+function cancelDrawing(){ drawing.active=false; drawing.pts=[]; clearDrawPreview(); }
+
+function addDrawPoint(pt){
+  if(!drawing.active) startDrawing();
+  // Snap to first point if close enough (close polygon)
+  if(drawing.pts.length>=3){
+    const first = drawing.pts[0];
+    const dx = pt.x - first.x, dy = pt.y - first.y;
+    const dist = Math.sqrt(dx*dx+dy*dy);
+    if(dist < 1.5){ closePoly(); return; }
+  }
+  drawing.pts.push({x:+pt.x.toFixed(2), y:+pt.y.toFixed(2)});
+  updateDrawPreview(pt);
+}
+
+function closePoly(){
+  if(drawing.pts.length < 3){ cancelDrawing(); return; }
+  const id = addPoly(null, drawing.pts);
+  cancelDrawing();
+  setMode('pen');
+}
+
+// ══════════════════════════════════════════
+// VERTEX EDITING
+// ══════════════════════════════════════════
+function removeVertex(polyId, idx){
+  const p = polys.find(p=>p.id===polyId);
+  if(!p || p.pts.length<=3) return; // keep minimum 3
+  p.pts.splice(idx,1);
+  renderAll();
+}
+
+function insertVertex(polyId, afterIdx, pt){
+  const p = polys.find(p=>p.id===polyId);
+  if(!p) return;
+  p.pts.splice(afterIdx+1, 0, {x:+pt.x.toFixed(2), y:+pt.y.toFixed(2)});
+  renderAll();
+}
+
+// ══════════════════════════════════════════
+// DRAG (SELECT MODE)
+// ══════════════════════════════════════════
+function startMovePoly(e, id){
+  const p = polys.find(p=>p.id===id);
+  const mp = clientToPct(e.clientX, e.clientY);
+  dragState = { type:'move', id, sx:mp.x, sy:mp.y, origPts: p.pts.map(pt=>({...pt})) };
+}
+
+function startMoveVertex(e, id, idx){
+  dragState = { type:'vertex', id, idx };
+}
+
+let lastMouse = null;
+
+// ══════════════════════════════════════════
+// SIDEBAR
+// ══════════════════════════════════════════
+function updateSidebar(){
+  document.getElementById('zone-count').textContent = polys.length;
+  const list = document.getElementById('zone-list');
+  list.innerHTML = polys.map(p=>`
+    <div class="zone-item ${p.id===selectedId?'selected':''}" data-id="${p.id}" onclick="selectPoly(${p.id})">
+      <div class="zone-dot ${p.id===selectedId?'selected':''}"></div>
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.label}</span>
+      <span class="zone-coords">${p.pts.length}pt</span>
+      <button class="zone-del" onclick="event.stopPropagation();deletePoly(${p.id})">✕</button>
+    </div>
+  `).join('');
+}
+
+function updateCoordsDisplay(p){
+  if(!p){ document.getElementById('cd-pts').textContent='—'; document.getElementById('cd-area').textContent='—'; return; }
+  document.getElementById('cd-pts').textContent = p.pts.length;
+  // Shoelace area in % units
+  let area = 0;
+  for(let i=0;i<p.pts.length;i++){
+    const a=p.pts[i], b=p.pts[(i+1)%p.pts.length];
+    area += a.x*b.y - b.x*a.y;
+  }
+  document.getElementById('cd-area').textContent = Math.abs(area/2).toFixed(1);
+}
+
+function updateModeIndicator(){
+  const el = document.getElementById('mode-indicator');
+  if(!el) return;
+  if(mode==='pen'){
+    if(drawing.active && drawing.pts.length>0){
+      el.textContent = `✏️ DISEGNO — ${drawing.pts.length} punti · Invio/doppio-click = chiudi · Esc = annulla`;
+    } else {
+      el.textContent = '✏️ Modalità: PENNA — click per iniziare';
+    }
+  } else {
+    el.textContent = '↖ Modalità: SELEZIONA — click su un poligono';
+  }
+}
+
+// ══════════════════════════════════════════
+// MODE TOGGLE
+// ══════════════════════════════════════════
+function setMode(m){
+  if(m==='pen' && drawing.active && drawing.pts.length>0){
+    // don't discard current drawing just by switching
+  } else if(m!=='pen'){
+    cancelDrawing();
+  }
+  mode = m;
+  document.getElementById('btn-pen').classList.toggle('active', m==='pen');
+  document.getElementById('btn-select').classList.toggle('active', m==='select');
+  document.getElementById('viewport').style.cursor = m==='pen' ? 'crosshair' : 'default';
+  const hints = {
+    pen:'Click = aggiungi punto · Doppio-click / Invio = chiudi · Esc = annulla',
+    select:'Click = seleziona · Trascina = sposta · Doppio-click vertice = rimuovi'
+  };
+  document.getElementById('toolbar-hint').textContent = hints[m];
+  renderAll();
+  updateModeIndicator();
+}
+
+// ══════════════════════════════════════════
+// VIEWPORT EVENTS
+// ══════════════════════════════════════════
 const vp = document.getElementById('viewport');
 
 vp.addEventListener('mousedown', e=>{
-  if(dragState) return;
-  if(e.target.closest('.collider')) return;
   if(e.button===1 || e.button===2 || e.altKey){
-    // Pan
     dragState = { type:'cam', sx:e.clientX, sy:e.clientY, cx:cam.x, cy:cam.y };
-  } else if(e.button===0){
-    // Create new zone
-    const mp = clientToMap(e.clientX, e.clientY);
-    dragState = { type:'create', sx:mp.x, sy:mp.y, cx:e.clientX, cy:e.clientY };
-    // Show preview div
-    const preview = document.createElement('div');
-    preview.id='create-preview';
-    preview.style.cssText=`position:absolute;background:rgba(255,60,60,0.25);border:2px dashed rgba(255,80,80,0.8);pointer-events:none;left:${mp.x}%;top:${mp.y}%;width:0;height:0`;
-    document.getElementById('colliders-layer').appendChild(preview);
+    e.preventDefault(); return;
   }
-  e.preventDefault();
+  if(mode==='pen' && e.button===0){
+    const mp = clientToPct(e.clientX, e.clientY);
+    addDrawPoint(mp);
+    e.preventDefault();
+  }
+  // select mode handled by shape listeners
+});
+
+vp.addEventListener('dblclick', e=>{
+  if(mode==='pen'){
+    closePoly();
+    e.preventDefault();
+  }
 });
 
 window.addEventListener('mousemove', e=>{
-  if(!dragState) return;
-  const mp = clientToMap(e.clientX, e.clientY);
+  const mp = clientToPct(e.clientX, e.clientY);
+  lastMouse = mp;
 
-  if(dragState.type==='cam'){
-    cam.x = dragState.cx + (e.clientX - dragState.sx);
-    cam.y = dragState.cy + (e.clientY - dragState.sy);
-    applyCamera();
+  if(dragState){
+    if(dragState.type==='cam'){
+      cam.x = dragState.cx + (e.clientX - dragState.sx);
+      cam.y = dragState.cy + (e.clientY - dragState.sy);
+      applyCamera();
+    } else if(dragState.type==='move'){
+      const p = polys.find(p=>p.id===dragState.id);
+      const dx=mp.x-dragState.sx, dy=mp.y-dragState.sy;
+      p.pts = dragState.origPts.map(pt=>({
+        x:+Math.max(0,Math.min(100,pt.x+dx)).toFixed(2),
+        y:+Math.max(0,Math.min(100,pt.y+dy)).toFixed(2)
+      }));
+      renderAll();
+      updateCoordsDisplay(p);
+    } else if(dragState.type==='vertex'){
+      const p = polys.find(p=>p.id===dragState.id);
+      p.pts[dragState.idx] = {x:+Math.max(0,Math.min(100,mp.x)).toFixed(2), y:+Math.max(0,Math.min(100,mp.y)).toFixed(2)};
+      renderAll();
+      updateCoordsDisplay(p);
+    }
+    return;
   }
-  else if(dragState.type==='move'){
-    const z = zones.find(z=>z.id===dragState.id);
-    z.x = Math.max(0, Math.min(100-z.w, dragState.ox + (mp.x - dragState.sx)));
-    z.y = Math.max(0, Math.min(100-z.h, dragState.oy + (mp.y - dragState.sy)));
-    rerenderZone(z.id);
-  }
-  else if(dragState.type==='resize'){
-    const z = zones.find(z=>z.id===dragState.id);
-    const dx = mp.x - dragState.sx;
-    const dy = mp.y - dragState.sy;
-    const h = dragState.handle;
-    let nx=dragState.ox, ny=dragState.oy, nw=dragState.ow, nh=dragState.oh;
-    if(h.includes('l')){ nx=dragState.ox+dx; nw=dragState.ow-dx; }
-    if(h.includes('r')){ nw=dragState.ow+dx; }
-    if(h.includes('t')){ ny=dragState.oy+dy; nh=dragState.oh-dy; }
-    if(h.includes('b')){ nh=dragState.oh+dy; }
-    if(nw<1) nw=1; if(nh<0.5) nh=0.5;
-    z.x=Math.max(0,nx); z.y=Math.max(0,ny); z.w=nw; z.h=nh;
-    rerenderZone(z.id);
-  }
-  else if(dragState.type==='create'){
-    const sx=dragState.sx, sy=dragState.sy;
-    const ex=mp.x, ey=mp.y;
-    const rx=Math.min(sx,ex), ry=Math.min(sy,ey);
-    const rw=Math.abs(ex-sx), rh=Math.abs(ey-sy);
-    const p = document.getElementById('create-preview');
-    if(p){ p.style.left=rx+'%'; p.style.top=ry+'%'; p.style.width=rw+'%'; p.style.height=rh+'%'; }
+
+  if(mode==='pen' && drawing.active){
+    updateDrawPreview(mp);
   }
 });
 
 window.addEventListener('mouseup', e=>{
-  if(!dragState) return;
-  if(dragState.type==='create'){
-    const mp = clientToMap(e.clientX, e.clientY);
-    const sx=dragState.sx, sy=dragState.sy;
-    const rx=Math.min(sx,mp.x), ry=Math.min(sy,mp.y);
-    const rw=Math.abs(mp.x-sx), rh=Math.abs(mp.y-sy);
-    const p = document.getElementById('create-preview');
-    if(p) p.remove();
-    if(rw>0.5 && rh>0.3){
-      addZone({ x:parseFloat(rx.toFixed(2)), y:parseFloat(ry.toFixed(2)), w:parseFloat(rw.toFixed(2)), h:parseFloat(rh.toFixed(2)) });
-    }
+  if(dragState && (dragState.type==='move'||dragState.type==='vertex')){
+    updateSidebar();
   }
   dragState = null;
 });
 
 vp.addEventListener('wheel', e=>{
   e.preventDefault();
-  const delta = e.deltaY > 0 ? -0.08 : 0.08;
-  const newScale = Math.max(0.2, Math.min(6, cam.scale+delta));
+  const delta = e.deltaY > 0 ? -0.09 : 0.09;
+  const newScale = Math.max(0.15, Math.min(8, cam.scale+delta));
   const rect = vp.getBoundingClientRect();
-  const mx = e.clientX - rect.left;
-  const my = e.clientY - rect.top;
+  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
   cam.x = mx - (mx - cam.x)*(newScale/cam.scale);
   cam.y = my - (my - cam.y)*(newScale/cam.scale);
   cam.scale = newScale;
   applyCamera();
 },{passive:false});
 
+vp.addEventListener('contextmenu', e=>e.preventDefault());
+
 // ══════════════════════════════════════════
-// BUTTONS
+// KEYBOARD
 // ══════════════════════════════════════════
-document.getElementById('btn-add').onclick = ()=>{
-  addZone({ x:10, y:10, w:20, h:10 });
-};
+window.addEventListener('keydown', e=>{
+  if(document.activeElement.tagName==='INPUT'||document.activeElement.tagName==='TEXTAREA') return;
+
+  if(e.key==='Escape'){
+    if(drawing.active){ cancelDrawing(); updateModeIndicator(); }
+    else { selectedId=null; renderAll(); updateSidebar(); }
+  }
+  if(e.key==='Enter'){
+    if(mode==='pen' && drawing.active && drawing.pts.length>=3){ closePoly(); }
+  }
+  if(e.key==='Delete'||e.key==='Backspace'){
+    if(selectedId) deletePoly(selectedId);
+  }
+  if(e.key==='z'&&(e.ctrlKey||e.metaKey)){
+    if(mode==='pen'&&drawing.active&&drawing.pts.length>0){
+      drawing.pts.pop();
+      updateDrawPreview(lastMouse);
+      updateModeIndicator();
+    }
+  }
+  if(e.key==='p'||e.key==='P') setMode('pen');
+  if(e.key==='s'||e.key==='S') setMode('select');
+});
+
+// ══════════════════════════════════════════
+// TOOLBAR BUTTONS
+// ══════════════════════════════════════════
+document.getElementById('btn-pen').onclick = ()=>setMode('pen');
+document.getElementById('btn-select').onclick = ()=>setMode('select');
 
 document.getElementById('btn-del-sel').onclick = ()=>{
-  if(selectedId) deleteZone(selectedId);
+  if(selectedId) deletePoly(selectedId);
 };
 
 document.getElementById('btn-clear').onclick = ()=>{
-  if(!confirm('Eliminare tutte le zone?')) return;
-  zones=[]; selectedId=null;
-  renderAllZones(); updateSidebar(); updateCoordsDisplay(null);
+  if(!confirm('Eliminare tutti i poligoni?')) return;
+  polys=[]; selectedId=null; cancelDrawing();
+  renderAll(); updateSidebar(); updateCoordsDisplay(null);
 };
 
 document.getElementById('btn-load-default').onclick = ()=>{
-  if(zones.length && !confirm('Sovrascrivere le zone esistenti?')) return;
-  zones=[]; idCounter=0;
-  DEFAULT_ZONES.forEach(z=>{ const id=++idCounter; zones.push({id,...z}); });
-  selectedId=null;
-  renderAllZones(); updateSidebar(); updateCoordsDisplay(null);
+  if(polys.length && !confirm('Sovrascrivere i poligoni esistenti?')) return;
+  polys=[]; idCounter=0;
+  DEFAULT_RECTS.forEach(r=>{
+    const id=++idCounter;
+    polys.push({id, label:r.label, pts:rectToPoly(r).map(p=>({x:+p.x.toFixed(1),y:+p.y.toFixed(1)}))});
+  });
+  selectedId=null; cancelDrawing();
+  renderAll(); updateSidebar(); updateCoordsDisplay(null);
 };
 
+// ══════════════════════════════════════════
+// DOUBLE-CLICK RENAME
+// ══════════════════════════════════════════
+document.getElementById('svg-layer').addEventListener('dblclick', e=>{
+  if(mode!=='select') return;
+  const g = e.target.closest('g[data-id]');
+  if(!g) return;
+  const id = parseInt(g.dataset.id);
+  const p = polys.find(p=>p.id===id);
+  if(!p) return;
+  if(e.target.classList.contains('poly-vertex')) return; // vertex dblclick = remove
+  const newName = prompt('Rinomina zona:', p.label);
+  if(newName && newName.trim()){ p.label=newName.trim(); renderAll(); updateSidebar(); }
+});
+
+// ══════════════════════════════════════════
+// EXPORT
+// ══════════════════════════════════════════
 function buildExport(){
-  const lines = zones.map(z=>
-    `  { label:'${z.label}', x:${z.x.toFixed(1)}, y:${z.y.toFixed(1)}, w:${z.w.toFixed(1)}, h:${z.h.toFixed(1)} },`
-  ).join('\n');
-  return `const WALKABLE_ZONES = [\n${lines}\n];`;
+  const lines = polys.map(p=>{
+    const ptsStr = p.pts.map(pt=>`{x:${pt.x},y:${pt.y}}`).join(',');
+    return `  { label:'${p.label}', pts:[${ptsStr}] },`;
+  }).join('\n');
+  return `// Point-in-polygon collision (use isWalkable from index.html)\nconst WALKABLE_ZONES = [\n${lines}\n];\n\n// Helper (paste in index.html):\n// function pointInPoly(px,py,pts){\n//   let inside=false;\n//   for(let i=0,j=pts.length-1;i<pts.length;j=i++){\n//     if((pts[i].y>py)!==(pts[j].y>py)&&px<(pts[j].x-pts[i].x)*(py-pts[i].y)/(pts[j].y-pts[i].y)+pts[i].x) inside=!inside;\n//   }\n//   return inside;\n// }\n// function isWalkable(px,py){ return WALKABLE_ZONES.some(z=>pointInPoly(px,py,z.pts)); }`;
 }
 
 document.getElementById('btn-export').onclick =
 document.getElementById('btn-export2').onclick = ()=>{
   const code = buildExport();
   document.getElementById('export-out').value = code;
-  navigator.clipboard.writeText(code).then(()=>{
-    document.getElementById('btn-export').textContent='✅ Copiato!';
-    document.getElementById('btn-export2').textContent='✅ Copiato!';
-    setTimeout(()=>{
-      document.getElementById('btn-export').textContent='📋 Esporta JSON';
-      document.getElementById('btn-export2').textContent='📋 Copia codice JS';
-    }, 2000);
+  navigator.clipboard.writeText(code).catch(()=>{});
+  ['btn-export','btn-export2'].forEach(id=>{
+    const b=document.getElementById(id);
+    const orig=b.textContent;
+    b.textContent='✅ Copiato!';
+    setTimeout(()=>b.textContent=orig,2000);
   });
 };
-
-// Keyboard
-window.addEventListener('keydown', e=>{
-  if(e.key==='Delete' || e.key==='Backspace'){
-    if(selectedId && document.activeElement.tagName!=='INPUT' && document.activeElement.tagName!=='TEXTAREA'){
-      deleteZone(selectedId);
-    }
-  }
-  // Double-click label rename via prompt
-});
-
-// Double-click to rename
-document.getElementById('colliders-layer').addEventListener('dblclick', e=>{
-  const col = e.target.closest('.collider');
-  if(!col) return;
-  const id = parseInt(col.dataset.id);
-  const z = zones.find(z=>z.id===id);
-  const newName = prompt('Rinomina zona:', z.label);
-  if(newName && newName.trim()){
-    z.label = newName.trim();
-    col.querySelector('.lbl').textContent = z.label;
-    updateSidebar();
-  }
-});
 
 // ══════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════
 window.addEventListener('load', ()=>{
+  resizeSVG();
   centerCamera();
-  // Auto-load defaults
-  DEFAULT_ZONES.forEach(z=>{ const id=++idCounter; zones.push({id,...z}); });
-  renderAllZones();
+  // Load defaults as polygons
+  DEFAULT_RECTS.forEach(r=>{
+    const id=++idCounter;
+    polys.push({id, label:r.label, pts:rectToPoly(r).map(p=>({x:+p.x.toFixed(1),y:+p.y.toFixed(1)}))});
+  });
+  renderAll();
   updateSidebar();
+  setMode('pen');
 });
-window.addEventListener('resize', centerCamera);
+window.addEventListener('resize', ()=>{ centerCamera(); });
 </script>
 </body>
 </html>

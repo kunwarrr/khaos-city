@@ -14,7 +14,7 @@
 body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:100vh;width:100vw;user-select:none}
 
 /* ─── TITLE ─── */
-#title-screen{position:fixed;inset:0;background:linear-gradient(160deg,#0d1f35 0%,#1a3a1a 55%,#0d2a1a 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;transition:opacity .7s}
+#title-screen{position:fixed;inset:0;background-image:url('assets/sfondo.png'),linear-gradient(160deg,rgba(13,31,53,.85) 0%,rgba(26,58,42,.85) 55%,rgba(13,42,26,.85) 100%);background-size:cover,cover;background-position:center center,center center;background-repeat:no-repeat,no-repeat;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;transition:opacity .7s}
 #title-screen.hidden{opacity:0;pointer-events:none}
 .title-logo{font-family:'Fredoka One',cursive;font-size:clamp(52px,9vw,100px);color:#fff;text-align:center;line-height:1.05;animation:titlePulse 2.5s ease-in-out infinite}
 .title-sub{font-size:clamp(12px,1.8vw,18px);color:#7dcf9a;margin-top:14px;letter-spacing:7px;text-transform:uppercase}
@@ -58,12 +58,50 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
 @keyframes labelFloat{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-4px)}}
 
 /* ─── TASK BADGE ─── */
-.task-badge-dot{position:absolute;width:28px;height:28px;background:#E84040;border:2.5px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Fredoka One',cursive;font-size:14px;color:#fff;box-shadow:0 3px 8px rgba(0,0,0,0.4);animation:bob 1.4s ease-in-out infinite;cursor:pointer;z-index:20}
+.task-badge-dot{position:absolute;width:28px;height:28px;background:#E84040;border:2.5px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Fredoka One',cursive;font-size:14px;color:#fff;box-shadow:0 3px 8px rgba(0,0,0,0.4);animation:bob 1.4s ease-in-out infinite;cursor:pointer;z-index:20;display:none !important;}
 .task-badge-dot.done{background:#1DB97A;animation:none}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 
 /* ─── PLAYER ─── */
-#player-sprite{position:absolute;width:24px;height:28px;pointer-events:none;transform:translate(-50%,-50%);transition:left .05s,top .05s,transform .1s;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:transparent;}
+#player-sprite{position:absolute;width:24px;height:28px;pointer-events:none;transform:translate(-50%,-50%);transition:left .05s,top .05s,transform .1s;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:transparent;z-index:2;overflow:visible;}
+/* ─── WIND TRAIL (pure CSS, no image) ─── */
+#wind-trail{
+  position:absolute;
+  width:140px;
+  height:34px;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .12s ease,transform .12s ease,top .12s ease,left .12s ease;
+  transform-origin:center center;
+  z-index:1;
+}
+#wind-trail.active{opacity:1;}
+
+/* Each streak is a <span> inside .wind-trail */
+.wind-streak{
+  position:absolute;
+  height:2px;
+  border-radius:2px;
+  background:linear-gradient(90deg,rgba(130,220,255,0.0),rgba(130,220,255,0.7),rgba(200,240,255,0.9),rgba(255,255,255,0.4));
+  transform-origin:right center;
+  opacity:0;
+}
+/* Animate streaks: slide left and fade */
+@keyframes streak-fly{
+  0%  {transform:translateX(0);   opacity:0;}
+  15% {opacity:1;}
+  80% {opacity:0.6;}
+  100%{transform:translateX(-70px); opacity:0;}
+}
+/* Individual streak configs — staggered delays & sizes */
+.wind-streak:nth-child(1){width:44px;top:-10px;right:14px;animation:streak-fly .55s ease-out infinite 0.00s;}
+.wind-streak:nth-child(2){width:60px;top:-4px; right:10px;animation:streak-fly .55s ease-out infinite 0.09s;}
+.wind-streak:nth-child(3){width:38px;top: 0px; right:18px;animation:streak-fly .55s ease-out infinite 0.18s;}
+.wind-streak:nth-child(4){width:52px;top: 5px; right: 8px;animation:streak-fly .55s ease-out infinite 0.04s;}
+.wind-streak:nth-child(5){width:30px;top:10px; right:20px;animation:streak-fly .55s ease-out infinite 0.22s;}
+.wind-streak:nth-child(6){width:46px;top:14px; right:12px;animation:streak-fly .55s ease-out infinite 0.13s;}
+.wind-streak:nth-child(7){width:56px;top:-7px; right: 6px;animation:streak-fly .60s ease-out infinite 0.30s;}
+.wind-streak:nth-child(8){width:34px;top: 8px; right:16px;animation:streak-fly .50s ease-out infinite 0.07s;}
 
 /* ─── VEHICLE DOTS ─── */
 .vehicle-dot{position:absolute;pointer-events:none;font-size:20px;transform:translate(-50%,-50%)}
@@ -184,7 +222,7 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
 
 <!-- ═══ TITLE ═══ -->
 <div id="title-screen">
-  <div class="title-logo">🏙️ KHAOS CITY</div>
+  <div class="title-logo">KHAOS CITY</div>
   <div class="title-sub">Gestione Urbana</div>
   <div class="title-year">SEI IL NUOVO SINDACO — SCEGLI BENE</div>
   <button class="title-btn" onclick="startGame()">▶&nbsp; INIZIA</button>
@@ -270,6 +308,16 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
 
   <!-- PLAYER SPRITE -->
   <div id="player-sprite" style="left:47%;top:47%"></div>
+  <div id="wind-trail">
+    <span class="wind-streak"></span>
+    <span class="wind-streak"></span>
+    <span class="wind-streak"></span>
+    <span class="wind-streak"></span>
+    <span class="wind-streak"></span>
+    <span class="wind-streak"></span>
+    <span class="wind-streak"></span>
+    <span class="wind-streak"></span>
+  </div>
 </div>
 </div>
 </div>
@@ -514,8 +562,8 @@ function getNextMap(zoneId, option){
 
 function switchMap(newMap){
   if(newMap === G.currentMap) return;
-  const img = document.getElementById('map-img');
-  img.classList.add('fading');
+    const img = document.getElementById('map-img');
+    img.classList.add('fading');
   setTimeout(()=>{
     img.src = MAP_FOLDER + newMap;
     G.currentMap = newMap;
@@ -550,6 +598,7 @@ const MAP_W = 1400, MAP_H = 900;
 let cam = {x:0, y:0, scale:1};
 let drag = {on:false, sx:0, sy:0, cx:0, cy:0};
 let currentZone = null;
+let followPlayer = false;
 
 function getWrap(){ return document.getElementById('city-wrap'); }
 
@@ -573,8 +622,8 @@ function applyCamera(noTransition){
 
 function enterZone(id){
   currentZone = id;
-  const d = DISTRICTS[id];
-  const zv = d.zoneView;
+    const d = DISTRICTS[id];
+    const zv = d.zoneView;
   const wrap = getWrap();
   const vw = wrap.clientWidth, vh = wrap.clientHeight;
   const zLeft  = (zv.left/100) * MAP_W;
@@ -603,6 +652,7 @@ function exitZone(){
 }
 
 function startDrag(e){
+  if(followPlayer) return;
   if(e.target.closest('.panel')||e.target.closest('#zone-back')||e.target.closest('#zone-name-badge')||e.target.closest('#task-panel')||e.target.closest('#confirm-overlay')) return;
   drag.on=true; drag.sx=e.clientX; drag.sy=e.clientY; drag.cx=cam.x; drag.cy=cam.y;
   getWrap().classList.add('dragging');
@@ -769,15 +819,12 @@ function executeChoice(zoneId, option){
   updateHUD();
   closeTaskPanel();
 
-  setTimeout(()=>{
-    const soundId = option === 'C' ? 'tromba-audio' : 'tada-audio';
-    playAudioAndThen(soundId, ()=>{
-      triggerMapTransition(nextMap);
-      if(G.tasksDone >= 4){
-        setTimeout(showEnd, 1200);
-      }
-    });
-  }, 300);
+  const soundId = option === 'C' ? 'tromba-audio' : 'tada-audio';
+  triggerMapTransition(nextMap);
+  playAudio(soundId);
+  if(G.tasksDone >= 4){
+    setTimeout(showEnd, 1200);
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -850,12 +897,13 @@ function showEnd(){
   }
 }
 
-function zoomToPlayer(){
+function centerOnPlayer(forceScale){
   const wrap = getWrap();
   const vw = wrap.clientWidth, vh = wrap.clientHeight;
   const playerX = (PLAYER.x/100) * MAP_W;
   const playerY = (PLAYER.y/100) * MAP_H;
-  cam.scale = Math.min(3.5, Math.max(1.8, cam.scale * 1.8));
+  if(forceScale !== undefined){ cam.scale = forceScale; }
+  cam.scale = Math.min(3.5, Math.max(0.3, cam.scale));
   cam.x = (vw/2) - playerX * cam.scale;
   cam.y = (vh/2) - playerY * cam.scale;
   const minX = Math.min(0, vw - MAP_W * cam.scale);
@@ -863,6 +911,14 @@ function zoomToPlayer(){
   cam.x = Math.max(minX, Math.min(0, cam.x));
   cam.y = Math.max(minY, Math.min(0, cam.y));
   applyCamera(false);
+}
+
+function zoomToPlayer(){
+  if(currentZone) return;
+  followPlayer = !followPlayer;
+  if(followPlayer){
+    centerOnPlayer(Math.min(3.5, Math.max(1.8, cam.scale * 1.8)));
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -913,16 +969,18 @@ function startBackgroundMusic(){
 function triggerMapTransition(newMap){
   const overlay = document.getElementById('transition-overlay');
   const img = document.getElementById('map-img');
-  if(overlay) overlay.classList.add('active');
+  if(overlay) overlay.classList.add('active','flash');
   if(img) img.classList.add('fading');
   setTimeout(()=>{
     switchMap(newMap);
-    if(overlay) overlay.classList.add('flash');
-  }, 250);
+  }, 120);
   setTimeout(()=>{
     if(overlay) overlay.classList.remove('flash');
+  }, 380);
+  setTimeout(()=>{
     if(overlay) overlay.classList.remove('active');
-  }, 800);
+    if(img) img.classList.remove('fading');
+  }, 480);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -931,32 +989,16 @@ function triggerMapTransition(newMap){
 const PLAYER = {
   x: 47,
   y: 47,
-  speed: 0.12,
+  speed: 0.04,
   dir: 'down',
   frame: 0,
   frameTimer: 0,
+  moved: false,
 };
 const SPRITE_PATH = 'assets/sindaco/';
 const keysDown = {};
 let nearDistrict = null;
 
-const WALKABLE_ZONES = [
-  { x:22.8, y:53.9, w:8.2,  h:13.3 },
-  { x:16.0, y:30.5, w:26.7, h:15.5 },
-  { x:27.7, y:30.3, w:20.0, h:10.0 },
-  { x:45.1, y:42.6, w:8.5,  h:5.0  },
-  { x:59.6, y:23.5, w:11.0, h:44.8 },
-  { x:59.9, y:23.1, w:19.0, h:22.1 },
-  { x:30.6, y:29.2, w:14.8, h:36.0 },
-  { x:43.5, y:27.4, w:17.8, h:36.3 },
-  { x:7.0,  y:7.2,  w:3.3,  h:6.2  },
-];
-function isWalkable(px, py){
-  for(const z of WALKABLE_ZONES){
-    if(px>=z.x && px<=z.x+z.w && py>=z.y && py<=z.y+z.h) return true;
-  }
-  return false;
-}
 const DISTRICT_ZONES_PCT = [
   {id:'mudtown',  cx:24, cy:25, r:22},
   {id:'industry', cx:73, cy:25, r:22},
@@ -964,10 +1006,16 @@ const DISTRICT_ZONES_PCT = [
   {id:'neon',     cx:73, cy:74, r:22},
 ];
 
+// Wind offset per direction (px). Adjust `x` and `y` to move the trail in world space
+const WIND_OFFSET = {
+  up:    { x: -15,  y: 0 },
+  down:  { x: 15,  y: 0 },
+  left:  { x: 0,   y: 10 },
+  right: { x: 0,   y: -10 },
+};
+
 function getPlayerSpriteFrame(){
-  return PLAYER.frame === 0
-    ? `${SPRITE_PATH}idle.png`
-    : `${SPRITE_PATH}walk${PLAYER.frame}.png`;
+  return `${SPRITE_PATH}idle.png`;
 }
 
 function updatePlayerSprite(){
@@ -979,10 +1027,23 @@ function updatePlayerSprite(){
   else if(PLAYER.dir === 'left') angle = 90;
   else if(PLAYER.dir === 'right') angle = -90;
   sprite.style.transform = `translate(-50%,-50%) rotate(${angle}deg)`;
+
+    const trail = document.getElementById('wind-trail');
+    if(trail){
+    const active = !!PLAYER.moved;
+    trail.classList.toggle('active', active);
+    let rot = 0;
+    if(PLAYER.dir === 'up') rot = 90;
+    else if(PLAYER.dir === 'down') rot = -90;
+    else if(PLAYER.dir === 'left') rot = 0;
+    else if(PLAYER.dir === 'right') rot = 180;
+    trail.style.transform = `translate(-50%,-50%) rotate(${rot}deg)`;
+  }
 }
 
 function animLoop(){
   let dx=0, dy=0;
+  let moved = false;
   if(!taskPanelOpen && !currentZone){
     if(keysDown['w']||keysDown['arrowup'])    dy=-1;
     if(keysDown['s']||keysDown['arrowdown'])  dy= 1;
@@ -1005,13 +1066,18 @@ function animLoop(){
 
     const nx=PLAYER.x+dx*PLAYER.speed, ny=PLAYER.y+dy*PLAYER.speed;
     const cnx=Math.max(1,Math.min(99,nx)), cny=Math.max(1,Math.min(99,ny));
-    let moved = false;
-    if(isWalkable(cnx,cny)){ PLAYER.x=cnx; PLAYER.y=cny; moved=true; }
-    else if(isWalkable(cnx,PLAYER.y)){ PLAYER.x=cnx; moved=true; }
-    else if(isWalkable(PLAYER.x,cny)){ PLAYER.y=cny; moved=true; }
+    PLAYER.x = cnx;
+    PLAYER.y = cny;
+    moved = dx!==0 || dy!==0;
+    PLAYER.moved = moved;
 
     const sprite=document.getElementById('player-sprite');
-    if(sprite){ sprite.style.left=PLAYER.x+'%'; sprite.style.top=PLAYER.y+'%'; }
+    const trail=document.getElementById('wind-trail');
+    const pxLeftNum = (PLAYER.x/100) * MAP_W;
+    const pxTopNum  = (PLAYER.y/100) * MAP_H;
+    const dirOffset = WIND_OFFSET[PLAYER.dir] ?? {x:0,y:0}; // px
+    if(sprite){ sprite.style.left=pxLeftNum+'px'; sprite.style.top=pxTopNum+'px'; }
+    if(trail){ trail.style.left=(pxLeftNum + dirOffset.x)+'px'; trail.style.top=(pxTopNum + dirOffset.y)+'px'; }
 
     if(moved){
       PLAYER.frameTimer += 1;
@@ -1023,12 +1089,22 @@ function animLoop(){
     }
   }
 
+  const sprite=document.getElementById('player-sprite');
+  if(sprite){
+    if(moved) sprite.classList.add('moving');
+    else sprite.classList.remove('moving');
+  }
+
   if(taskPanelOpen || currentZone || (!keysDown['w'] && !keysDown['a'] && !keysDown['s'] && !keysDown['d'] && !keysDown['arrowup'] && !keysDown['arrowleft'] && !keysDown['arrowdown'] && !keysDown['arrowright'])){
     PLAYER.frame = 0;
     PLAYER.frameTimer = 0;
   }
 
   updatePlayerSprite();
+
+  if(followPlayer && !currentZone){
+    centerOnPlayer();
+  }
 
   if(!currentZone){
     let found=null;
@@ -1080,10 +1156,12 @@ window.addEventListener('keyup', e=>{ keysDown[e.key.toLowerCase()]=false; });
 const wrap2=document.getElementById('city-wrap');
 let initPinch=0;
 wrap2.addEventListener('touchstart',e=>{
+  if(followPlayer) return;
   if(e.touches.length===1){ drag.on=true;drag.sx=e.touches[0].clientX;drag.sy=e.touches[0].clientY;drag.cx=cam.x;drag.cy=cam.y; }
   else if(e.touches.length===2){ const dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY;initPinch=Math.sqrt(dx*dx+dy*dy); }
 },{passive:true});
 wrap2.addEventListener('touchmove',e=>{
+  if(followPlayer) return;
   if(e.touches.length===1&&drag.on){ cam.x=drag.cx+(e.touches[0].clientX-drag.sx);cam.y=drag.cy+(e.touches[0].clientY-drag.sy);applyCamera(true); }
   else if(e.touches.length===2&&initPinch>0){ const dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY;const d=Math.sqrt(dx*dx+dy*dy);cam.scale=Math.max(0.3,Math.min(3.5,cam.scale*(d/initPinch)));initPinch=d;applyCamera(true); }
 },{passive:true});
