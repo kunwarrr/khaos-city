@@ -50,8 +50,7 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
 #map-img.fading{opacity:0}
 
 /* ─── DISTRICT ZONE OVERLAYS ─── */
-.zone-overlay{position:absolute;border-radius:12px;cursor:pointer;transition:background .2s,box-shadow .2s;border:3px solid transparent}
-.zone-overlay:hover{box-shadow:0 0 0 3px rgba(255,255,255,0.5)}
+.zone-overlay{position:absolute;border-radius:12px;transition:background .2s,box-shadow .2s;border:3px solid transparent;pointer-events:none}
 .zone-overlay.active{border-color:rgba(255,255,0,0.7);box-shadow:0 0 20px rgba(255,255,0,0.3)}
 
 /* ─── DISTRICT LABELS ─── */
@@ -248,17 +247,13 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
 
   <!-- DISTRICT CLICKABLE ZONES -->
   <div class="zone-overlay" id="zone-mudtown"
-       style="left:1%;top:1%;width:47%;height:48%"
-       onclick="tryEnterZone('mudtown')"></div>
+       style="left:1%;top:1%;width:47%;height:48%"></div>
   <div class="zone-overlay" id="zone-industry"
-       style="left:49%;top:1%;width:50%;height:48%"
-       onclick="tryEnterZone('industry')"></div>
+       style="left:49%;top:1%;width:50%;height:48%"></div>
   <div class="zone-overlay" id="zone-solaris"
-       style="left:1%;top:50%;width:47%;height:49%"
-       onclick="tryEnterZone('solaris')"></div>
+       style="left:1%;top:50%;width:47%;height:49%"></div>
   <div class="zone-overlay" id="zone-neon"
-       style="left:49%;top:50%;width:50%;height:49%"
-       onclick="tryEnterZone('neon')"></div>
+       style="left:49%;top:50%;width:50%;height:49%"></div>
 
   <!-- DISTRICT LABELS -->
   <div class="zone-label" style="left:16%;top:4%">🏚️ MUDTOWN</div>
@@ -980,11 +975,14 @@ function animLoop(){
         PLAYER.frameTimer = 0;
       }
       if(PLAYER.frame === 0) PLAYER.frame = 1;
-    } else {
-      PLAYER.frame = 0;
-      PLAYER.frameTimer = 0;
     }
   }
+
+  if(taskPanelOpen || currentZone || (!keysDown['w'] && !keysDown['a'] && !keysDown['s'] && !keysDown['d'] && !keysDown['arrowup'] && !keysDown['arrowleft'] && !keysDown['arrowdown'] && !keysDown['arrowright'])){
+    PLAYER.frame = 0;
+    PLAYER.frameTimer = 0;
+  }
+
   updatePlayerSprite();
 
   if(!currentZone){
