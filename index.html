@@ -51,11 +51,11 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
 
 /* ─── DISTRICT ZONE OVERLAYS ─── */
 .zone-overlay{position:absolute;border-radius:12px;transition:background .2s,box-shadow .2s;border:3px solid transparent;pointer-events:none}
-.zone-overlay.active{border-color:rgba(255,255,0,0.7);box-shadow:0 0 20px rgba(255,255,0,0.3)}
+.zone-overlay.active{border-color:transparent;box-shadow:none}
 
 /* ─── DISTRICT LABELS ─── */
-.zone-label{position:absolute;pointer-events:none;font-family:'Fredoka One',cursive;font-size:14px;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,0.9),0 0 12px rgba(0,0,0,0.8);white-space:nowrap;letter-spacing:1px;animation:labelFloat 2s ease-in-out infinite}
-@keyframes labelFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.zone-label{position:absolute;pointer-events:none;font-family:'Fredoka One',cursive;font-size:14px;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,0.9),0 0 12px rgba(0,0,0,0.8);white-space:nowrap;letter-spacing:1px;animation:labelFloat 2s ease-in-out infinite;transform:translateX(-50%);text-align:center;}
+@keyframes labelFloat{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-4px)}}
 
 /* ─── TASK BADGE ─── */
 .task-badge-dot{position:absolute;width:28px;height:28px;background:#E84040;border:2.5px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Fredoka One',cursive;font-size:14px;color:#fff;box-shadow:0 3px 8px rgba(0,0,0,0.4);animation:bob 1.4s ease-in-out infinite;cursor:pointer;z-index:20}
@@ -63,7 +63,7 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 
 /* ─── PLAYER ─── */
-#player-sprite{position:absolute;width:36px;height:40px;pointer-events:none;transform:translate(-50%,-50%);transition:left .05s,top .05s,transform .1s;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:transparent;}
+#player-sprite{position:absolute;width:24px;height:28px;pointer-events:none;transform:translate(-50%,-50%);transition:left .05s,top .05s,transform .1s;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:transparent;}
 
 /* ─── VEHICLE DOTS ─── */
 .vehicle-dot{position:absolute;pointer-events:none;font-size:20px;transform:translate(-50%,-50%)}
@@ -225,6 +225,7 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
     <span id="val-mob">0</span>%
   </div>
   <span class="hud-task-indicator" id="hud-task-step">Fase 1/4</span>
+  <button class="hud-btn" onclick="zoomToPlayer()">👤 Zoom Omino</button>
   <button class="hud-btn" onclick="showIntro()">📋 Guida</button>
 </div>
 
@@ -256,10 +257,10 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
        style="left:49%;top:50%;width:50%;height:49%"></div>
 
   <!-- DISTRICT LABELS -->
-  <div class="zone-label" style="left:16%;top:4%">🏚️ MUDTOWN</div>
-  <div class="zone-label" style="left:58%;top:4%">🏗️ INDUSTRY</div>
-  <div class="zone-label" style="left:10%;top:52%">✨ SOLARIS</div>
-  <div class="zone-label" style="left:58%;top:52%">🌃 NEON DISTRICT</div>
+  <div class="zone-label" style="left:24%;top:10%">🏚️ MUDTOWN</div>
+  <div class="zone-label" style="left:73%;top:10%">🏗️ INDUSTRY</div>
+  <div class="zone-label" style="left:24%;top:56%">✨ SOLARIS</div>
+  <div class="zone-label" style="left:73%;top:56%">🌃 NEON DISTRICT</div>
 
   <!-- TASK BADGE DOTS -->
   <div class="task-badge-dot" id="badge-mudtown"  style="left:43%;top:5%"  onclick="tryEnterZone('mudtown')">T</div>
@@ -320,6 +321,7 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
 <div id="transition-overlay"></div>
 <audio id="bg-audio" src="assets/bg.mp3" preload="auto" loop></audio>
 <audio id="tada-audio" src="assets/tada.mp3" preload="auto"></audio>
+<audio id="tromba-audio" src="assets/tromba.mp3" preload="auto"></audio>
 <div id="task-panel" class="panel">
   <div class="panel-hdr">
     <span id="tp-icon" style="font-size:26px"></span>
@@ -686,7 +688,8 @@ function openTaskPanel(id){
     </div>
     <div style="text-align:center;color:#888;font-size:12px;margin-top:8px">Decisione già presa.</div>`;
   } else {
-    ['B','C'].forEach(opt=>{
+    const order = Math.random() < 0.5 ? ['B','C'] : ['C','B'];
+    order.forEach(opt=>{
       const o = opt === 'B' ? d.optionB : d.optionC;
       const disabled = !canAfford ? 'disabled' : '';
       html += `<div class="choice-card" id="choice-card-${opt}">
@@ -701,6 +704,7 @@ function openTaskPanel(id){
   }
 
   document.getElementById('tp-body').innerHTML = html;
+  centerCamera();
   document.getElementById('task-panel').style.display = 'block';
   document.getElementById('task-overlay-bg').style.display = 'block';
   taskPanelOpen = true;
@@ -764,11 +768,16 @@ function executeChoice(zoneId, option){
   const nextMap = getNextMap(zoneId, option);
   updateHUD();
   closeTaskPanel();
-  triggerMapTransition(nextMap);
 
-  if(G.tasksDone >= 4){
-    setTimeout(showEnd, 1200);
-  }
+  setTimeout(()=>{
+    const soundId = option === 'C' ? 'tromba-audio' : 'tada-audio';
+    playAudioAndThen(soundId, ()=>{
+      triggerMapTransition(nextMap);
+      if(G.tasksDone >= 4){
+        setTimeout(showEnd, 1200);
+      }
+    });
+  }, 300);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -836,6 +845,24 @@ function showEnd(){
   document.getElementById('end-stats-grid').innerHTML = statsHtml;
 
   document.getElementById('end-screen').style.display = 'flex';
+  if(!won){
+    setTimeout(()=>playAudio('tromba-audio'), 300);
+  }
+}
+
+function zoomToPlayer(){
+  const wrap = getWrap();
+  const vw = wrap.clientWidth, vh = wrap.clientHeight;
+  const playerX = (PLAYER.x/100) * MAP_W;
+  const playerY = (PLAYER.y/100) * MAP_H;
+  cam.scale = Math.min(3.5, Math.max(1.8, cam.scale * 1.8));
+  cam.x = (vw/2) - playerX * cam.scale;
+  cam.y = (vh/2) - playerY * cam.scale;
+  const minX = Math.min(0, vw - MAP_W * cam.scale);
+  const minY = Math.min(0, vh - MAP_H * cam.scale);
+  cam.x = Math.max(minX, Math.min(0, cam.x));
+  cam.y = Math.max(minY, Math.min(0, cam.y));
+  applyCamera(false);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -857,6 +884,25 @@ function playAudio(id){
   audio.play().catch(()=>{});
 }
 
+function playAudioAndThen(id, callback){
+  const audio = document.getElementById(id);
+  if(!audio){ if(callback) callback(); return; }
+  audio.pause();
+  audio.currentTime = 0;
+  const onEnd = ()=>{
+    audio.removeEventListener('ended', onEnd);
+    if(callback) callback();
+  };
+  audio.addEventListener('ended', onEnd);
+  const promise = audio.play();
+  if(promise && typeof promise.catch === 'function'){
+    promise.catch(()=>{
+      audio.removeEventListener('ended', onEnd);
+      if(callback) setTimeout(callback, 600);
+    });
+  }
+}
+
 function startBackgroundMusic(){
   const bg = document.getElementById('bg-audio');
   if(!bg) return;
@@ -870,7 +916,6 @@ function triggerMapTransition(newMap){
   if(overlay) overlay.classList.add('active');
   if(img) img.classList.add('fading');
   setTimeout(()=>{
-    playAudio('tada-audio');
     switchMap(newMap);
     if(overlay) overlay.classList.add('flash');
   }, 250);
@@ -931,8 +976,8 @@ function updatePlayerSprite(){
   sprite.style.backgroundImage = `url('${getPlayerSpriteFrame()}')`;
   let angle = 0;
   if(PLAYER.dir === 'up') angle = 180;
-  else if(PLAYER.dir === 'left') angle = -90;
-  else if(PLAYER.dir === 'right') angle = 90;
+  else if(PLAYER.dir === 'left') angle = 90;
+  else if(PLAYER.dir === 'right') angle = -90;
   sprite.style.transform = `translate(-50%,-50%) rotate(${angle}deg)`;
 }
 
@@ -1019,6 +1064,9 @@ window.addEventListener('keydown', e=>{
       if(!taskPanelOpen) openTaskPanel(currentZone);
     }
     else if(nearDistrict){ tryEnterZone(nearDistrict); }
+  }
+  if(e.key.toLowerCase()==='o'){
+    zoomToPlayer();
   }
   if(e.key==='Escape'){
     if(taskPanelOpen) closeTaskPanel();
