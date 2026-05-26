@@ -63,7 +63,7 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 
 /* ─── PLAYER ─── */
-#player-sprite{position:absolute;width:24px;height:28px;pointer-events:none;transform:translate(-50%,-50%);transition:left .05s,top .05s,transform .1s;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:transparent;z-index:2;overflow:visible;}
+#player-sprite{position:absolute;width:48px;height:56px;pointer-events:none;transform:translate(-50%,-50%);transition:left .05s,top .05s,transform .1s;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:transparent;z-index:2;overflow:visible;filter:drop-shadow(0 0 16px rgba(0,0,0,.45));}
 /* ─── WIND TRAIL (pure CSS, no image) ─── */
 #wind-trail{
   position:absolute;
@@ -835,10 +835,14 @@ function executeChoice(zoneId, option){
 // ═══════════════════════════════════════════════════════════════
 function updateHUD(){
   const bK = G.budget >= 1000 ? Math.round(G.budget/1000)+'K' : G.budget;
-  document.getElementById('hud-budget').textContent = G.budget.toLocaleString('it');
   document.getElementById('sv-budget').textContent = bK;
-  if(G.budget < 50000){
-    document.getElementById('hud-budget-pill').classList.add('low');
+  const budgetPill = document.getElementById('hud-budget-pill');
+  if(budgetPill){
+    if(G.budget < 50000){
+      budgetPill.classList.add('low');
+    } else {
+      budgetPill.classList.remove('low');
+    }
   }
 
   ['inq','hap','mob'].forEach(k=>{
@@ -997,7 +1001,7 @@ function triggerMapTransition(newMap){
 const PLAYER = {
   x: 47,
   y: 47,
-  speed: 0.08,
+  speed: 0.88,
   dir: 'down',
   frame: 0,
   frameTimer: 0,
