@@ -233,7 +233,7 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
 <div id="title-screen">
   <div class="title-logo">KHAOS CITY</div>
   <div class="title-sub">Gestione Urbana</div>
-  <div class="title-year">SEI IL NUOVO SINDACO — SCEGLI BENE</div>
+  <div class="title-year"></div>
   <button class="title-btn" onclick="startGame()" disabled>▶&nbsp; INIZIA</button>
 </div>
 
@@ -603,6 +603,26 @@ const STAT_EFFECTS = {
   neon: {
     B: { inq: 0,  hap: 25, mob: 25 },
     C: { inq: 25, hap: 0,  mob: 0  },
+  },
+};
+
+// End-game textual summaries for each district choice
+const END_SUMMARIES = {
+  mudtown: {
+    B: "Mudtown viene ristrutturata con interventi di riqualificazione. Il quartiere guadagna spazi verdi, ma alcuni commercianti tradizionali lamentano costi più alti e un lento aumento dell'affluenza.",
+    C: "Mudtown è stata in buona parte rasa al suolo per far posto a grandi sviluppi. Il traffico è aumentato sensibilmente, nuove strade portano più automobili, e molti cittadini di Mudtown si sentono disorientati e senza punti di riferimento.",
+  },
+  industry: {
+    B: "L'industria ha ricevuto incentivi per modernizzarsi. L'inquinamento si riduce leggermente, ma i cantieri e le modifiche infrastrutturali provocano code temporanee e disagi alla mobilità.",
+    C: "L'area industriale è stata trasformata in un grande centro commerciale. Questo ha attirato numerose auto e ha aumentato il traffico nelle ore di punta; i lavoratori storici lamentano la perdita di posti di lavoro tradizionali.",
+  },
+  solaris: {
+    B: "Solaris ha puntato sulle energie rinnovabili: meno inquinamento e un senso di orgoglio civico. Tuttavia alcuni investimenti hanno richiesto sacrifici nel budget pubblico.",
+    C: "Il progetto scelto in Solaris favorisce grandi impianti tecnologici: nuove opportunità economiche ma una certa alienazione culturale per gli abitanti locali.",
+  },
+  neon: {
+    B: "Neon è diventata più vivace e attrattiva per i giovani: più eventi e vita notturna, con un aumento dell'afflusso di visitatori e qualche problema di gestione del traffico.",
+    C: "La ristrutturazione di Neon ha privilegiato spazi privati e grandi marchi: l'attrattiva commerciale è cresciuta, ma i residenti storici avvertono una perdita di identità e aumento dei costi.",
   },
 };
 
@@ -989,7 +1009,24 @@ function showEnd(){
     const label = c ? (c === 'B' ? d.optionB.label : d.optionC.label) : '—';
     choicesSummary += `${d.icon} ${d.name}: ${label}\n`;
   });
-  document.getElementById('end-sub').textContent = 'Riepilogo decisioni:\n' + choicesSummary;
+
+  // Build detailed narrative for each choice
+  const narrativeHtml = TASK_ORDER.map(id => {
+    const d = DISTRICTS[id];
+    const c = G.choices[id];
+    if(c){
+      const text = (END_SUMMARIES[id] && END_SUMMARIES[id][c]) ? END_SUMMARIES[id][c] : '';
+      return `<div style="margin-bottom:10px"><strong>${d.icon} ${d.name}:</strong> ${text}</div>`;
+    } else {
+      return `<div style="margin-bottom:10px"><strong>${d.icon} ${d.name}:</strong> Nessuna decisione presa.</div>`;
+    }
+  }).join('');
+
+  // Put choices summary (plain text) and narrative (HTML) into the end panel
+  const endSubEl = document.getElementById('end-sub');
+  if(endSubEl){
+    endSubEl.innerHTML = `<div style="white-space:pre-line;margin-bottom:14px"><strong>Riepilogo decisioni:</strong>\n${choicesSummary}</div><div><strong>Conseguenze:</strong></div>${narrativeHtml}`;
+  }
 
   const statsHtml = [
     {label:'Inquinamento', val: s.inq+'%', color: s.inq<=50?'#efffef':'#ffefef', textColor: s.inq<=50?'#1a5a1a':'#8a0000'},
