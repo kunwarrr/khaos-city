@@ -22,6 +22,15 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
 .title-btn{margin-top:44px;background:var(--gold);color:#1a2000;font-family:'Fredoka One',cursive;font-size:26px;border:none;padding:15px 64px;border-radius:50px;cursor:pointer;box-shadow:0 7px 0 #7a5800;transition:transform .1s,box-shadow .1s}
 .title-btn:hover{transform:translateY(-2px);box-shadow:0 9px 0 #7a5800}
 .title-btn:active{transform:translateY(5px);box-shadow:0 2px 0 #7a5800}
+.title-btn:disabled{opacity:.55;cursor:not-allowed;background:rgba(245,200,66,.6)}
+#loading-overlay{position:fixed;inset:0;z-index:1000;background:rgba(8,12,18,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;backdrop-filter:blur(8px);transition:opacity .35s;pointer-events:auto}
+#loading-overlay.hidden{opacity:0;pointer-events:none}
+#loading-overlay .loader{width:78px;height:78px;border-radius:50%;border:8px solid rgba(255,255,255,.14);border-top-color:#1DB97A;animation:spin 1.2s linear infinite;margin-bottom:24px}
+#loading-overlay .loading-text{font-size:18px;font-weight:800;letter-spacing:.4px;margin-bottom:8px}
+#loading-overlay .loading-sub{font-size:13px;color:#cbd5e1}
+#loading-progress{width:260px;height:10px;background:rgba(255,255,255,.12);border-radius:999px;overflow:hidden;margin-top:18px}
+#loading-progress .fill{height:100%;width:0%;background:linear-gradient(90deg,#1DB97A,#F5C842);transition:width .25s ease}
+@keyframes spin{to{transform:rotate(360deg)}}
 @keyframes titlePulse{0%,100%{text-shadow:0 5px 0 #000,0 0 30px rgba(255,200,0,.2)}50%{text-shadow:0 5px 0 #000,0 0 70px rgba(255,200,0,.7)}}
 
 /* ─── HUD ─── */
@@ -39,7 +48,7 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
 .hud-task-indicator{background:rgba(245,200,66,.15);color:var(--gold);border:1.5px solid var(--gold);border-radius:22px;padding:4px 13px;font-size:13px;font-weight:800}
 
 /* ─── CITY VIEWPORT ─── */
-#city-wrap{position:fixed;top:58px;left:0;right:0;bottom:96px;overflow:hidden;cursor:grab;background:#2a3a2a}
+#city-wrap{position:fixed;top:58px;left:0;right:0;bottom:96px;overflow:hidden;cursor:grab;background:#2a3a2a url('assets/sfondo2.png') center center / cover no-repeat}
 #city-wrap.dragging{cursor:grabbing}
 #city-canvas{position:absolute;transform-origin:0 0;transition:transform 0.6s cubic-bezier(0.34,1.06,0.64,1)}
 #city-canvas.no-transition{transition:none}
@@ -225,7 +234,14 @@ body{font-family:'Nunito',sans-serif;background:#1a2a1a;overflow:hidden;height:1
   <div class="title-logo">KHAOS CITY</div>
   <div class="title-sub">Gestione Urbana</div>
   <div class="title-year">SEI IL NUOVO SINDACO — SCEGLI BENE</div>
-  <button class="title-btn" onclick="startGame()">▶&nbsp; INIZIA</button>
+  <button class="title-btn" onclick="startGame()" disabled>▶&nbsp; INIZIA</button>
+</div>
+
+<div id="loading-overlay">
+  <div class="loader"></div>
+  <div class="loading-text">Caricamento risorse...</div>
+  <div class="loading-sub" id="loading-percent">0%</div>
+  <div id="loading-progress"><div class="fill" id="loading-fill"></div></div>
 </div>
 
 <!-- ═══ INTRO ═══ -->
@@ -602,22 +618,108 @@ let gameOver = false;
 
 function getWrap(){ return document.getElementById('city-wrap'); }
 
-function centerCamera(){
+function centerCamera(noTransition = false){
   const wrap = getWrap();
   const vw = wrap.clientWidth, vh = wrap.clientHeight;
   const s = Math.min(vw/MAP_W, vh/MAP_H) * 0.98;
   cam.scale = s;
   cam.x = (vw - MAP_W*s)/2;
   cam.y = (vh - MAP_H*s)/2;
-  applyCamera(true);
+  applyCamera(noTransition);
+}
+
+function clampCamera(){
+  const wrap = getWrap();
+  const vw = wrap.clientWidth, vh = wrap.clientHeight;
+  const worldW = MAP_W * cam.scale;
+  const worldH = MAP_H * cam.scale;
+  if(worldW <= vw){ cam.x = (vw - worldW) / 2; }
+  else { cam.x = Math.min(0, Math.max(vw - worldW, cam.x)); }
+  if(worldH <= vh){ cam.y = (vh - worldH) / 2; }
+  else { cam.y = Math.min(0, Math.max(vh - worldH, cam.y)); }
 }
 
 function applyCamera(noTransition){
+  clampCamera();
   const canvas = document.getElementById('city-canvas');
   if(noTransition){ canvas.classList.add('no-transition'); }
   else { canvas.classList.remove('no-transition'); }
   canvas.style.transform = `translate(${cam.x}px,${cam.y}px) scale(${cam.scale})`;
   if(noTransition){ requestAnimationFrame(()=>canvas.classList.remove('no-transition')); }
+}
+
+function setLoadingProgress(loaded, total){
+  const percent = total ? Math.round(loaded / total * 100) : 100;
+  const el = document.getElementById('loading-percent');
+  const fill = document.getElementById('loading-fill');
+  if(el) el.textContent = `${percent}%`;
+  if(fill) fill.style.width = `${percent}%`;
+}
+
+function hideLoadingOverlay(){
+  const overlay = document.getElementById('loading-overlay');
+  if(!overlay) return;
+  overlay.classList.add('hidden');
+  setTimeout(()=>{ overlay.style.display = 'none'; }, 450);
+}
+
+let assetsLoaded = false;
+function preloadAssets(){
+  const base = 'assets/';
+  const mapNames = new Set(['nnnn.png']);
+  Object.values(MAP_TRANSITIONS).forEach(zone => {
+    Object.values(zone).forEach(option => {
+      if(typeof option === 'string'){
+        mapNames.add(option);
+      } else {
+        Object.values(option).forEach(next => mapNames.add(next));
+      }
+    });
+  });
+
+  const assetUrls = [
+    'assets/sfondo.png',
+    'assets/sfondo2.png',
+    'assets/bg.mp3',
+    'assets/tada.mp3',
+    'assets/tromba.mp3',
+    'assets/sindaco/idle.png',
+    ...[...mapNames].map(x => base + x),
+  ];
+
+  const total = assetUrls.length;
+  let loaded = 0;
+  const overlay = document.getElementById('loading-overlay');
+  if(overlay) overlay.style.display = 'flex';
+
+  const markLoaded = () => {
+    loaded += 1;
+    setLoadingProgress(loaded, total);
+    if(loaded >= total){
+      assetsLoaded = true;
+      hideLoadingOverlay();
+      const btn = document.querySelector('.title-btn');
+      if(btn) btn.disabled = false;
+    }
+  };
+
+  assetUrls.forEach(src => {
+    if(src.endsWith('.png')){
+      const img = new Image();
+      img.onload = markLoaded;
+      img.onerror = markLoaded;
+      img.src = src;
+    } else {
+      const audio = document.createElement('audio');
+      audio.addEventListener('canplaythrough', markLoaded, { once: true });
+      audio.addEventListener('loadeddata', markLoaded, { once: true });
+      audio.addEventListener('error', markLoaded, { once: true });
+      audio.src = src;
+      audio.load();
+    }
+  });
+
+  setLoadingProgress(loaded, total);
 }
 
 function enterZone(id){
@@ -675,6 +777,7 @@ function doZoom(e){
 // TITLE / INTRO
 // ═══════════════════════════════════════════════════════════════
 function startGame(){
+  if(!assetsLoaded){ showToast('Attendi il caricamento delle risorse...', 'info'); return; }
   document.getElementById('title-screen').classList.add('hidden');
   startBackgroundMusic();
   setTimeout(()=>{ document.getElementById('intro-overlay').classList.remove('hidden'); }, 700);
@@ -927,6 +1030,8 @@ function zoomToPlayer(){
   followPlayer = !followPlayer;
   if(followPlayer){
     centerOnPlayer(Math.min(3.5, Math.max(1.8, cam.scale * 1.8)));
+  } else {
+    centerCamera(false);
   }
 }
 
@@ -1194,6 +1299,7 @@ wrap2.addEventListener('touchmove',e=>{
 },{passive:true});
 wrap2.addEventListener('touchend',()=>{drag.on=false;});
 
+preloadAssets();
 window.addEventListener('load',()=>{ centerCamera(); updateHUD(); updatePlayerSprite(); animLoop(); startBackgroundMusic(); });
 window.addEventListener('resize', centerCamera);
 </script>
